@@ -10,13 +10,7 @@ public class ChessBoard {
 
     private ChessPiece[][] boardArray = new ChessPiece[8][8];
 
-    public static void main(String [] args) {
-        ChessBoard board = new ChessBoard();
-        board.printBoard();
-    }
-
     public ChessBoard() {
-        resetBoard();
     }
 
     /**

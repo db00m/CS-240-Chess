@@ -45,16 +45,24 @@ public class ChessPiece {
     }
 
     public String toString() {
-        if (type == PieceType.KNIGHT && color == ChessGame.TeamColor.BLACK) {
-            return "N";
-        } else if (type == PieceType.KNIGHT) {
-            return "n";
-        }
-
         if (color == ChessGame.TeamColor.BLACK) {
-            return type.toString().substring(0, 1).toUpperCase();
+            return switch (type) {
+                case PieceType.KING -> "♔";
+                case PieceType.QUEEN -> "♕";
+                case PieceType.ROOK -> "♖";
+                case PieceType.BISHOP -> "♗";
+                case PieceType.KNIGHT -> "♘";
+                case PieceType.PAWN -> "♙";
+            };
         } else {
-            return type.toString().substring(0, 1).toLowerCase();
+            return switch (type) {
+                case PieceType.KING -> "♚";
+                case PieceType.QUEEN -> "♛";
+                case PieceType.ROOK -> "♜";
+                case PieceType.BISHOP -> "♝";
+                case PieceType.KNIGHT -> "♞";
+                case PieceType.PAWN -> "♟";
+            };
         }
     }
 
@@ -68,7 +76,7 @@ public class ChessPiece {
      * @return starting column of the piece (for use in ChessPosition)
      */
 
-    private int startingColumn(int pieceIndex) {
+    private int startingColumn(int pieceIndex) { // we might be able to store piece index as a static var
         return switch (type) {
             case KING -> 4;
             case QUEEN -> 3;
