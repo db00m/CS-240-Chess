@@ -26,7 +26,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        boardArray[position.getRow()][position.getColumn()] = piece;
+        boardArray[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     /**
@@ -37,7 +37,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return boardArray[position.getRow()][position.getColumn()];
+        return boardArray[position.getRow()-1][position.getColumn()-1];
     }
 
     public void printBoard() {
@@ -66,7 +66,7 @@ public class ChessBoard {
 
         for (ChessGame.TeamColor color : ChessGame.TeamColor.values()) {
             // Add pawns to board
-            for (int i = 0; i < 8; i++) {
+            for (int i = 1; i < 9; i++) {
                 var pawn = new ChessPiece(color, ChessPiece.PieceType.PAWN);
                 addPiece(pawn.getStartingPosition(i), pawn);
             }

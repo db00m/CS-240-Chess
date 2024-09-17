@@ -79,23 +79,29 @@ public class ChessPiece {
 
     private int startingColumn(int pieceIndex) { // we might be able to store piece index as a static var
         return switch (type) {
-            case KING -> 4;
-            case QUEEN -> 3;
+            case KING -> 5;
+            case QUEEN -> 4;
             case BISHOP -> {
                 if (pieceIndex == 0) {
-                    yield 2;
-                } else {
-                    yield 5;
-                }
-            }
-            case KNIGHT -> {
-                if (pieceIndex == 0) {
-                    yield 1;
+                    yield 3;
                 } else {
                     yield 6;
                 }
             }
-            case ROOK -> pieceIndex * 7; // 0 if index is 0 and 7 if index is 1
+            case KNIGHT -> {
+                if (pieceIndex == 0) {
+                    yield 2;
+                } else {
+                    yield 7;
+                }
+            }
+            case ROOK -> {
+                if (pieceIndex == 0) {
+                    yield 1;
+                } else {
+                    yield 8;
+                }
+            }
             case PAWN -> pieceIndex;
         };
     }
@@ -107,15 +113,15 @@ public class ChessPiece {
     private int startingRow() {
         if (color == ChessGame.TeamColor.BLACK) {
             if (type == PieceType.PAWN) {
-                return 6;
-            } else {
                 return 7;
+            } else {
+                return 8;
             }
         } else {
             if (type == PieceType.PAWN) {
-                return 1;
+                return 2;
             } else {
-                return 0;
+                return 1;
             }
         }
     }

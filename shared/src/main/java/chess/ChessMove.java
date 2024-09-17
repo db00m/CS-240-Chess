@@ -36,7 +36,7 @@ public class ChessMove {
     }
 
     public String toString() {
-        return startPosition.toString() + " - " + endPosition.toString();
+        return startPosition.toString() + " - " + endPosition.toString() + "->" + promotionPiece;
     }
 
     /**

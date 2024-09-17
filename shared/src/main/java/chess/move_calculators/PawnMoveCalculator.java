@@ -46,6 +46,40 @@ public class PawnMoveCalculator {
     }
 
     /**
+     * This method includes both the starting move rule and the basic rule.
+     * @return a set of all the possible basic moves
+     */
+    private Collection<ChessMove> basicMoves() {
+        HashSet<ChessMove> moves = new HashSet<>();
+
+        for (int i = 1; i < 3; i += 1) {
+            if (i == 2 && notInStartPosition()) {
+                break;  // only can advance 1 space
+            }
+
+            int row = position.getRow() + i * progressionDirection();
+
+            if (row > 8 || row < 1) {
+                break;  // move is off board
+            }
+
+            ChessPosition nextPosition = new ChessPosition(row, position.getColumn());
+
+            if (board.getPiece(nextPosition) == null) {  // Check if space is empty
+                if (row == 8 || row == 1) {
+                    moves.addAll(promotionMoves(nextPosition));
+                } else {
+                    moves.add(new ChessMove(position, nextPosition, null));
+                }
+            } else {
+                break;  // exit loop, can't move beyond this space
+            }
+        }
+
+        return moves;
+    }
+
+    /**
      * Attack rules
      * @return set of all possible attack moves
      */
@@ -59,35 +93,11 @@ public class PawnMoveCalculator {
             ChessPiece attackablePiece = board.getPiece(attackablePosition);
 
             if (attackablePiece != null && attackablePiece.getTeamColor() != teamColor) {
-                moves.add(new ChessMove(position, attackablePosition, null));
-            }
-        }
-
-        return moves;
-    }
-
-    /**
-     * This method includes both the starting move rule and the basic rule.
-     * @return a set of all the possible basic moves
-     */
-    private Collection<ChessMove> basicMoves() {
-        HashSet<ChessMove> moves = new HashSet<>();
-
-        for (int i = 1; i < 3; i += 1) {
-            if (i == 2 && notInStartPosition()) {
-                break;
-            }
-
-            int row = position.getRow() + i * progressionDirection();
-
-            if (row > 7 || row < 0) {
-                break;
-            }
-
-            ChessPosition nextPosition = new ChessPosition(row, position.getColumn());
-
-            if (board.getPiece(nextPosition) == null) {
-                moves.add(new ChessMove(position, nextPosition, null));
+                if (row == 8 || row == 1) {
+                    moves.addAll(promotionMoves(attackablePosition));
+                } else {
+                    moves.add(new ChessMove(position, attackablePosition, null));
+                }
             }
         }
 
@@ -98,14 +108,27 @@ public class PawnMoveCalculator {
         HashSet<ChessMove> moves = new HashSet<>();
 
         if (pieceHasMoved3Ranks()) {
-            for (int i = -1; i < 2; i += 1) {
+            for (int i = -1; i < 2; i += 2) {
                 int column = position.getColumn() + i;
                 ChessPosition enemyPosition = new ChessPosition(column, position.getRow());
-                if (board.getPiece(enemyPosition) != null) {
+                if (board.getPiece(enemyPosition) != null && board.getPiece(position).getTeamColor() != teamColor) {
                     var newPosition = new ChessPosition(enemyPosition.getColumn(), enemyPosition.getRow() + progressionDirection());
                     moves.add(new ChessMove(position, newPosition, null));
                 }
             }
+        }
+
+        return moves;
+    }
+
+    private Collection<ChessMove> promotionMoves(ChessPosition newPosition) {
+        HashSet<ChessMove> moves = new HashSet<>();
+        for (ChessPiece.PieceType pieceType : ChessPiece.PieceType.values()) {
+            if (pieceType == ChessPiece.PieceType.PAWN || pieceType == ChessPiece.PieceType.KING) {
+                continue;
+            }
+
+            moves.add(new ChessMove(position, newPosition, pieceType));
         }
 
         return moves;
@@ -117,9 +140,9 @@ public class PawnMoveCalculator {
      */
     private boolean notInStartPosition() {
         if (teamColor == ChessGame.TeamColor.BLACK) {
-            return position.getRow() == 6;
+            return position.getRow() != 7;
         } else {
-            return position.getColumn() == 1;
+            return position.getRow() != 2;
         }
     }
 
@@ -136,7 +159,7 @@ public class PawnMoveCalculator {
     }
 
     private boolean pieceHasMoved3Ranks() {
-        return (teamColor == ChessGame.TeamColor.BLACK && position.getRow() == 3) ||
-                (teamColor == ChessGame.TeamColor.WHITE && position.getRow() == 4);
+        return (teamColor == ChessGame.TeamColor.BLACK && position.getRow() == 4) ||
+                (teamColor == ChessGame.TeamColor.WHITE && position.getRow() == 5);
     }
 }
