@@ -33,8 +33,7 @@ public class KingMoveCalculator {
             for (int j = -1; j < 2; j++) {
                 ChessPosition newPosition = new ChessPosition(position.getRow() + i, position.getColumn() + j);
 
-                if (newPosition.getRow() > 8 || newPosition.getColumn() > 8 ||
-                        newPosition.getRow() < 1 || newPosition.getColumn() < 1) {  // new position is outside board
+                if (newPosition.isOffBoard()) {  // new position is outside board
                     continue;
                 }
 

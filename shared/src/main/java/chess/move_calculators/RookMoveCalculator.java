@@ -64,7 +64,7 @@ public class RookMoveCalculator {
     }
 
     private ChessGame.MoveType calculateMoveType(ChessPosition newPosition) {
-        if (newPosition.offBoard()) {
+        if (newPosition.isOffBoard()) {
             return ChessGame.MoveType.BLOCKED;
         }
 

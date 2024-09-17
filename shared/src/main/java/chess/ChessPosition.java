@@ -34,7 +34,7 @@ public class ChessPosition {
         return column;
     }
 
-    public boolean offBoard() {
+    public boolean isOffBoard() {
         return row > 8 || column > 8 || row < 1 || column < 1;
     }
 

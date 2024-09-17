@@ -58,11 +58,11 @@ public class PawnMoveCalculator {
 
             int row = position.getRow() + i * progressionDirection();
 
-            if (row > 8 || row < 1) {
-                break;  // move is off board
-            }
-
             ChessPosition nextPosition = new ChessPosition(row, position.getColumn());
+
+            if (nextPosition.isOffBoard()) {
+                break;
+            }
 
             if (board.getPiece(nextPosition) == null) {  // Check if space is empty
                 if (row == 8 || row == 1) {
