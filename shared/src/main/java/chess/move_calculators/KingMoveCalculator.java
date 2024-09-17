@@ -42,7 +42,7 @@ public class KingMoveCalculator {
                     continue;
                 }
 
-                moves.add(new ChessMove(position, newPosition, null));
+                moves.add(new ChessMove(position, newPosition));
             }
         }
 

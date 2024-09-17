@@ -68,7 +68,7 @@ public class PawnMoveCalculator {
                 if (row == 8 || row == 1) {
                     moves.addAll(promotionMoves(nextPosition));
                 } else {
-                    moves.add(new ChessMove(position, nextPosition, null));
+                    moves.add(new ChessMove(position, nextPosition));
                 }
             } else {
                 break;  // exit loop, can't move beyond this space
@@ -95,7 +95,7 @@ public class PawnMoveCalculator {
                 if (row == 8 || row == 1) {
                     moves.addAll(promotionMoves(attackablePosition));
                 } else {
-                    moves.add(new ChessMove(position, attackablePosition, null));
+                    moves.add(new ChessMove(position, attackablePosition));
                 }
             }
         }
@@ -112,7 +112,7 @@ public class PawnMoveCalculator {
                 ChessPosition enemyPosition = new ChessPosition(column, position.getRow());
                 if (board.getPiece(enemyPosition) != null && board.getPiece(position).getTeamColor() != teamColor) {
                     var newPosition = new ChessPosition(enemyPosition.getColumn(), enemyPosition.getRow() + progressionDirection());
-                    moves.add(new ChessMove(position, newPosition, null));
+                    moves.add(new ChessMove(position, newPosition));
                 }
             }
         }
