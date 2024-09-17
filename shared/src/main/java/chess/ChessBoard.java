@@ -13,6 +13,12 @@ public class ChessBoard {
     public ChessBoard() {
     }
 
+    public static void main(String [] args) {
+        var board = new ChessBoard();
+        board.resetBoard();
+        board.printBoard();
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
@@ -31,7 +37,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return boardArray[position.getRow()][position.getColumn()];
     }
 
     public void printBoard() {
