@@ -38,6 +38,12 @@ public class ChessGame {
         BLACK
     }
 
+    public enum MoveType {
+        CAPTURE,
+        BLOCKED,
+        ADVANCE
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *

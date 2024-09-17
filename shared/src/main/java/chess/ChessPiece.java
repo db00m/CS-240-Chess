@@ -137,6 +137,7 @@ public class ChessPiece {
         return switch (type) {
             case PAWN -> new chess.move_calculators.PawnMoveCalculator(board, myPosition, color).pieceMoves();
             case KING -> new chess.move_calculators.KingMoveCalculator(board, myPosition, color).pieceMoves();
+            case ROOK -> new chess.move_calculators.RookMoveCalculator(board, myPosition, color).pieceMoves();
             default -> Collections.emptySet();
         };
     }
