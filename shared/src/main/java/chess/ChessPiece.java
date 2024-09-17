@@ -3,6 +3,13 @@ package chess;
 import java.util.Collection;
 import java.util.Collections;
 
+import chess.move_calculators.PawnMoveCalculator;
+import chess.move_calculators.BishopMoveCalculator;
+import chess.move_calculators.RookMoveCalculator;
+import chess.move_calculators.QueenMoveCalculator;
+import chess.move_calculators.KingMoveCalculator;
+
+
 /**
  * Represents a single chess piece
  * <p>
@@ -135,10 +142,11 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         return switch (type) {
-            case PAWN -> new chess.move_calculators.PawnMoveCalculator(board, myPosition, color).pieceMoves();
-            case KING -> new chess.move_calculators.KingMoveCalculator(board, myPosition, color).pieceMoves();
-            case ROOK -> new chess.move_calculators.RookMoveCalculator(board, myPosition, color).pieceMoves();
-            case BISHOP -> new chess.move_calculators.BishopMoveCalculator(board, myPosition, color).pieceMoves();
+            case PAWN -> new PawnMoveCalculator(board, myPosition, color).pieceMoves();
+            case KING -> new KingMoveCalculator(board, myPosition, color).pieceMoves();
+            case ROOK -> new RookMoveCalculator(board, myPosition, color).pieceMoves();
+            case BISHOP -> new BishopMoveCalculator(board, myPosition, color).pieceMoves();
+            case QUEEN -> new QueenMoveCalculator(board, myPosition, color).pieceMoves();
             default -> Collections.emptySet();
         };
     }

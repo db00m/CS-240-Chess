@@ -31,46 +31,34 @@ public class BishopMoveCalculator {
             for (int j = 1; j < 9; j++) {
                 ChessPosition newPosition = new ChessPosition(position.getRow() + (i * j), position.getColumn() + (i * j));
 
-                if (IsValidMove(moves, newPosition)) break;
+                if (pieceShouldNotAdvance(moves, newPosition)) break;
             }
 
             for (int j = 1; j < 9; j++) {
                 ChessPosition newPosition = new ChessPosition(position.getRow() + (i * j * -1), position.getColumn() + (i * j));
 
-                if (IsValidMove(moves, newPosition)) break;
+                if (pieceShouldNotAdvance(moves, newPosition)) break;
             }
         }
 
         return moves;
     }
 
-    private boolean IsValidMove(Set<ChessMove> moves, ChessPosition newPosition) {
-        ChessGame.MoveType moveType = calculateMoveType(newPosition);
-
-        if (moveType == ChessGame.MoveType.BLOCKED) {
-            return true;
-        } else if (moveType == ChessGame.MoveType.CAPTURE) {
-            moves.add(new ChessMove(position, newPosition));
-            return true;
-        }
-
-        moves.add(new ChessMove(position, newPosition));
-        return false;
-    }
-
-    private ChessGame.MoveType calculateMoveType(ChessPosition newPosition) {
+    private boolean pieceShouldNotAdvance(Collection<ChessMove> moves, ChessPosition newPosition) {
         if (newPosition.isOffBoard()) {
-            return ChessGame.MoveType.BLOCKED;
+            return true;
         }
 
         ChessPiece piece = board.getPiece(newPosition);
 
         if (piece == null) {
-            return ChessGame.MoveType.ADVANCE;
+            moves.add(new ChessMove(position, newPosition));
+            return false;
         } else if (piece.getTeamColor() != teamColor) {
-            return ChessGame.MoveType.CAPTURE;
+            moves.add(new ChessMove(position, newPosition));
+            return true;
         }
 
-        return ChessGame.MoveType.BLOCKED;
+        return true;
     }
 }

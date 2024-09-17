@@ -32,50 +32,34 @@ public class RookMoveCalculator {
             for (int j = 1; j < 9; j++) {
                 ChessPosition newPosition = new ChessPosition(position.getRow() + (j * i), position.getColumn()); // Up and Down
 
-                ChessGame.MoveType moveType = calculateMoveType(newPosition);
-
-                if (moveType == ChessGame.MoveType.ADVANCE) {
-                    moves.add(new ChessMove(position, newPosition, null));
-                } else if (moveType == ChessGame.MoveType.CAPTURE) {
-                    moves.add(new ChessMove(position, newPosition, null));
-                    break;
-                } else if (moveType == ChessGame.MoveType.BLOCKED) {
-                    break;
-                }
+                if (pieceShouldNotAdvance(moves, newPosition)) break;
             }
 
             for (int j = 1; j < 9; j++) {
                 ChessPosition newPosition = new ChessPosition(position.getRow(), position.getColumn() + (j * i)); // Side to side
 
-                ChessGame.MoveType moveType = calculateMoveType(newPosition);
-
-                if (moveType == ChessGame.MoveType.ADVANCE) {
-                    moves.add(new ChessMove(position, newPosition, null));
-                } else if (moveType == ChessGame.MoveType.CAPTURE) {
-                    moves.add(new ChessMove(position, newPosition, null));
-                    break;
-                } else if (moveType == ChessGame.MoveType.BLOCKED) {
-                    break;
-                }
+                if (pieceShouldNotAdvance(moves, newPosition)) break;
             }
         }
 
         return moves;
     }
 
-    private ChessGame.MoveType calculateMoveType(ChessPosition newPosition) {
+    private boolean pieceShouldNotAdvance(Collection<ChessMove> moves, ChessPosition newPosition) {
         if (newPosition.isOffBoard()) {
-            return ChessGame.MoveType.BLOCKED;
+            return true;
         }
 
         ChessPiece piece = board.getPiece(newPosition);
 
         if (piece == null) {
-            return ChessGame.MoveType.ADVANCE; // TODO: Overload ChessMove
+            moves.add(new ChessMove(position, newPosition));
+            return false;
         } else if (piece.getTeamColor() != teamColor) {
-            return ChessGame.MoveType.CAPTURE;
+            moves.add(new ChessMove(position, newPosition));
+            return true;
         }
 
-        return ChessGame.MoveType.BLOCKED;
+        return true;
     }
 }
