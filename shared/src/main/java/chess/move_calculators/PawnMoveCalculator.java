@@ -1,7 +1,6 @@
 package chess.move_calculators;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 
 import chess.ChessGame;
