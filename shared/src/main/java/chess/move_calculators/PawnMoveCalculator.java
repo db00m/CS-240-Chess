@@ -89,6 +89,11 @@ public class PawnMoveCalculator {
             int column = position.getColumn() + i;
 
             ChessPosition attackablePosition = new ChessPosition(row, column);
+
+            if (attackablePosition.isOffBoard()) {
+                continue;
+            }
+
             ChessPiece attackablePiece = board.getPiece(attackablePosition);
 
             if (attackablePiece != null && attackablePiece.getTeamColor() != teamColor) {

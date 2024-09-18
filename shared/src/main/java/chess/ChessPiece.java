@@ -2,12 +2,14 @@ package chess;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 import chess.move_calculators.PawnMoveCalculator;
 import chess.move_calculators.BishopMoveCalculator;
 import chess.move_calculators.RookMoveCalculator;
 import chess.move_calculators.QueenMoveCalculator;
 import chess.move_calculators.KingMoveCalculator;
+import chess.move_calculators.KnightMoveCalculator;
 
 
 /**
@@ -147,7 +149,20 @@ public class ChessPiece {
             case ROOK -> new RookMoveCalculator(board, myPosition, color).pieceMoves();
             case BISHOP -> new BishopMoveCalculator(board, myPosition, color).pieceMoves();
             case QUEEN -> new QueenMoveCalculator(board, myPosition, color).pieceMoves();
-            default -> Collections.emptySet();
+            case KNIGHT -> new KnightMoveCalculator(board, myPosition, color).pieceMoves();
         };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return type == that.type && color == that.color;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, color);
     }
 }

@@ -7,7 +7,6 @@ import java.util.Set;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessBoard;
-import chess.ChessPiece;
 import chess.ChessPosition;
 
 public class QueenMoveCalculator {

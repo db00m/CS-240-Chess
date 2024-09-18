@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -11,12 +14,6 @@ public class ChessBoard {
     private ChessPiece[][] boardArray = new ChessPiece[8][8];
 
     public ChessBoard() {
-    }
-
-    public static void main(String [] args) {
-        var board = new ChessBoard();
-        board.resetBoard();
-        board.printBoard();
     }
 
     /**
@@ -38,22 +35,6 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return boardArray[position.getRow()-1][position.getColumn()-1];
-    }
-
-    public void printBoard() {
-        for (ChessPiece[] row : boardArray) {
-            StringBuilder rowString = new StringBuilder();
-            for (ChessPiece piece : row) {
-                rowString.append("|");
-                if (piece != null) {
-                    rowString.append(piece);
-                } else {
-                    rowString.append(" ");
-                }
-            }
-            rowString.append("|");
-            System.out.println(rowString);
-        }
     }
 
     /**
@@ -87,5 +68,35 @@ public class ChessBoard {
             var queen = new ChessPiece(color, ChessPiece.PieceType.QUEEN);
             addPiece(queen.getStartingPosition(0), queen);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(boardArray, that.boardArray);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(boardArray);
+    }
+
+    public String toString() {
+        StringBuilder boardString = new StringBuilder();
+        for (ChessPiece[] row : boardArray) {
+            for (ChessPiece piece : row) {
+                boardString.append("|");
+                if (piece != null) {
+                    boardString.append(piece);
+                } else {
+                    boardString.append(" ");
+                }
+            }
+            boardString.append("|\n");
+        }
+
+        return boardString.toString();
     }
 }
