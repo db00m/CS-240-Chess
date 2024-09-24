@@ -1,65 +1,56 @@
 package chess.move_calculators;
 
+import chess.*;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessBoard;
-import chess.ChessPiece;
-import chess.ChessPosition;
-
-/**
- * Rooks can move in the cardinal directions, stopped only by piece that get in it's way.
- */
 public class RookMoveCalculator {
-
     ChessBoard board;
-    ChessPosition position;
+    ChessPosition myPosition;
     ChessGame.TeamColor teamColor;
+    Set<ChessMove> moves = new HashSet<>();
 
     public RookMoveCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor teamColor) {
         this.board = board;
-        this.position = myPosition;
+        this.myPosition = myPosition;
         this.teamColor = teamColor;
     }
 
-    public Collection<ChessMove> pieceMoves() {
-        Set<ChessMove> moves = new HashSet<>();
+    public Collection<ChessMove> calculate() {
 
         for (int i = -1; i < 2; i += 2) {
-            for (int j = 1; j < 9; j++) {
-                ChessPosition newPosition = new ChessPosition(position.getRow() + (j * i), position.getColumn()); // Up and Down
+            for (int j = 1; j < 8; j++) {
+                var newPosition = new ChessPosition(myPosition.row() + (i*j), myPosition.col());  // row +-, col 0
 
-                if (pieceShouldNotAdvance(moves, newPosition)) break;
+                if (!pieceShouldAdvance(newPosition)) { break; }
             }
+            for (int j = 1; j < 8; j++) {
+                var newPosition = new ChessPosition(myPosition.row(), myPosition.col() + (i*j));  // row +-, col 0
 
-            for (int j = 1; j < 9; j++) {
-                ChessPosition newPosition = new ChessPosition(position.getRow(), position.getColumn() + (j * i)); // Side to side
-
-                if (pieceShouldNotAdvance(moves, newPosition)) break;
+                if (!pieceShouldAdvance(newPosition)) { break; }
             }
         }
 
         return moves;
     }
 
-    private boolean pieceShouldNotAdvance(Collection<ChessMove> moves, ChessPosition newPosition) {
+    private boolean pieceShouldAdvance(ChessPosition newPosition) {
         if (newPosition.isOffBoard()) {
-            return true;
+            return false;
         }
 
         ChessPiece piece = board.getPiece(newPosition);
 
         if (piece == null) {
-            moves.add(new ChessMove(position, newPosition));
-            return false;
-        } else if (piece.getTeamColor() != teamColor) {
-            moves.add(new ChessMove(position, newPosition));
+            moves.add(new ChessMove(myPosition, newPosition));  // space free
             return true;
+        } else if (piece.getTeamColor() != teamColor) {
+            moves.add(new ChessMove(myPosition, newPosition));  // space occupied by enemy
+            return false;
         }
 
-        return true;
+        return false;
     }
 }

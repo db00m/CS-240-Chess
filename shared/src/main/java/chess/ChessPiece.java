@@ -1,16 +1,10 @@
 package chess;
 
+import chess.move_calculators.*;
+
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
-
-import chess.move_calculators.PawnMoveCalculator;
-import chess.move_calculators.BishopMoveCalculator;
-import chess.move_calculators.RookMoveCalculator;
-import chess.move_calculators.QueenMoveCalculator;
-import chess.move_calculators.KingMoveCalculator;
-import chess.move_calculators.KnightMoveCalculator;
-
 
 /**
  * Represents a single chess piece
@@ -20,12 +14,28 @@ import chess.move_calculators.KnightMoveCalculator;
  */
 public class ChessPiece {
 
-    private final PieceType type;
-    private final ChessGame.TeamColor color;
+    final static Map<PieceType, String> WHITE_PIECE_MAPPING = Map.of(
+            PieceType.PAWN, "P",
+            PieceType.KNIGHT, "N",
+            PieceType.ROOK, "R",
+            PieceType.QUEEN, "Q",
+            PieceType.KING, "K",
+            PieceType.BISHOP, "B");
+
+    final static Map<PieceType, String> BLACK_PIECE_MAPPING = Map.of(
+            PieceType.PAWN, "p",
+            PieceType.KNIGHT, "n",
+            PieceType.ROOK, "r",
+            PieceType.QUEEN, "q",
+            PieceType.KING, "k",
+            PieceType.BISHOP, "b");
+
+    ChessGame.TeamColor teamColor;
+    PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
+        this.teamColor = pieceColor;
         this.type = type;
-        this.color = pieceColor;
     }
 
     /**
@@ -44,7 +54,7 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return color;
+        return teamColor;
     }
 
     /**
@@ -54,39 +64,27 @@ public class ChessPiece {
         return type;
     }
 
-    public String toString() {
-        if (color == ChessGame.TeamColor.BLACK) {
-            return switch (type) {
-                case PieceType.KING -> "♔";
-                case PieceType.QUEEN -> "♕";
-                case PieceType.ROOK -> "♖";
-                case PieceType.BISHOP -> "♗";
-                case PieceType.KNIGHT -> "♘";
-                case PieceType.PAWN -> "♙";
-            };
+    public ChessPosition startingPosition(int pieceIndex) {
+        return new ChessPosition(startingRow(), startingCol(pieceIndex));
+    }
+
+    private int startingRow() {
+        if (teamColor == ChessGame.TeamColor.WHITE) {
+            if (type == PieceType.PAWN) {
+                return 2;
+            } else {
+                return 1;
+            }
         } else {
-            return switch (type) {
-                case PieceType.KING -> "♚";
-                case PieceType.QUEEN -> "♛";
-                case PieceType.ROOK -> "♜";
-                case PieceType.BISHOP -> "♝";
-                case PieceType.KNIGHT -> "♞";
-                case PieceType.PAWN -> "♟";
-            };
+            if (type == PieceType.PAWN) {
+                return 7;
+            } else {
+                return 8;
+            }
         }
     }
 
-    public ChessPosition getStartingPosition(int pieceIndex) {
-        return new ChessPosition(startingRow(), startingColumn(pieceIndex));
-    }
-
-    /**
-     *
-     * @param pieceIndex for pieces that have more than one, what is the current count.
-     * @return starting column of the piece (for use in ChessPosition)
-     */
-
-    private int startingColumn(int pieceIndex) { // we might be able to store piece index as a static var
+    private int startingCol(int pieceIndex) {
         return switch (type) {
             case KING -> 5;
             case QUEEN -> 4;
@@ -111,28 +109,8 @@ public class ChessPiece {
                     yield 8;
                 }
             }
-            case PAWN -> pieceIndex;
+            case PAWN -> pieceIndex + 1;
         };
-    }
-
-    /**
-     * Calculates the starting row of the piece.
-     * @return starting row (for use in ChessPosition)
-     */
-    private int startingRow() {
-        if (color == ChessGame.TeamColor.BLACK) {
-            if (type == PieceType.PAWN) {
-                return 7;
-            } else {
-                return 8;
-            }
-        } else {
-            if (type == PieceType.PAWN) {
-                return 2;
-            } else {
-                return 1;
-            }
-        }
     }
 
     /**
@@ -144,13 +122,23 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         return switch (type) {
-            case PAWN -> new PawnMoveCalculator(board, myPosition, color).pieceMoves();
-            case KING -> new KingMoveCalculator(board, myPosition, color).pieceMoves();
-            case ROOK -> new RookMoveCalculator(board, myPosition, color).pieceMoves();
-            case BISHOP -> new BishopMoveCalculator(board, myPosition, color).pieceMoves();
-            case QUEEN -> new QueenMoveCalculator(board, myPosition, color).pieceMoves();
-            case KNIGHT -> new KnightMoveCalculator(board, myPosition, color).pieceMoves();
+            case KING -> new KingMoveCalculator(board, myPosition, teamColor).calculate();
+            case QUEEN -> new QueenMoveCalculator(board, myPosition, teamColor).calculate();
+            case BISHOP -> new BishopMoveCalculator(board, myPosition, teamColor).calculate();
+            case KNIGHT -> new KnightMoveCalculator(board, myPosition, teamColor).calculate();
+            case ROOK -> new RookMoveCalculator(board, myPosition, teamColor).calculate();
+            case PAWN -> new PawnMoveCalculator(board, myPosition, teamColor).calculate();
         };
+    }
+
+
+    @Override
+    public String toString() {
+        if (teamColor == ChessGame.TeamColor.WHITE) {
+            return WHITE_PIECE_MAPPING.get(type);
+        } else {
+            return BLACK_PIECE_MAPPING.get(type);
+        }
     }
 
     @Override
@@ -158,11 +146,11 @@ public class ChessPiece {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessPiece that = (ChessPiece) o;
-        return type == that.type && color == that.color;
+        return teamColor == that.teamColor && type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, color);
+        return Objects.hash(teamColor, type);
     }
 }

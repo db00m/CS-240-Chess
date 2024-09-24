@@ -1,64 +1,57 @@
 package chess.move_calculators;
 
+import chess.*;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessBoard;
-import chess.ChessPiece;
-import chess.ChessPosition;
-
-/**
- * Bishop moves Diagonally in all directions unless stopped by piece
- */
 public class BishopMoveCalculator {
-    private final ChessBoard board;
-    private final ChessPosition position;
-    private final ChessGame.TeamColor teamColor;
+    ChessBoard board;
+    ChessPosition myPosition;
+    ChessGame.TeamColor teamColor;
+    Set<ChessMove> moves = new HashSet<>();
 
-    public BishopMoveCalculator(ChessBoard board, ChessPosition position, ChessGame.TeamColor teamColor) {
+    public BishopMoveCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor teamColor) {
         this.board = board;
-        this.position = position;
+        this.myPosition = myPosition;
         this.teamColor = teamColor;
     }
 
-    public Collection<ChessMove> pieceMoves() {
-        Set<ChessMove> moves = new HashSet<>();
 
-        for (int i = -1; i < 2; i++) {
-            for (int j = 1; j < 9; j++) {
-                ChessPosition newPosition = new ChessPosition(position.getRow() + (i * j), position.getColumn() + (i * j));
+    public Collection<ChessMove> calculate() {
+        for (int i = -1; i < 2; i += 2) {
+            for (int j = 1; j < 8; j++) {
+                var newPosition = new ChessPosition(myPosition.row() + (i*j), myPosition.col() + (i*j));  // row +, col 0 +
 
-                if (pieceShouldNotAdvance(moves, newPosition)) break;
+                if (!pieceShouldAdvance(newPosition)) { break; }
             }
+            for (int j = 1; j < 8; j++) {
+                var newPosition = new ChessPosition(myPosition.row() - (i*j), myPosition.col() + (i*j));  // row +, col 0 -
 
-            for (int j = 1; j < 9; j++) {
-                ChessPosition newPosition = new ChessPosition(position.getRow() + (i * j * -1), position.getColumn() + (i * j));
-
-                if (pieceShouldNotAdvance(moves, newPosition)) break;
+                if (!pieceShouldAdvance(newPosition)) { break; }
             }
         }
 
         return moves;
     }
 
-    private boolean pieceShouldNotAdvance(Collection<ChessMove> moves, ChessPosition newPosition) {
+
+    private boolean pieceShouldAdvance(ChessPosition newPosition) {
         if (newPosition.isOffBoard()) {
-            return true;
+            return false;
         }
 
         ChessPiece piece = board.getPiece(newPosition);
 
         if (piece == null) {
-            moves.add(new ChessMove(position, newPosition));
-            return false;
-        } else if (piece.getTeamColor() != teamColor) {
-            moves.add(new ChessMove(position, newPosition));
+            moves.add(new ChessMove(myPosition, newPosition));  // space free
             return true;
+        } else if (piece.getTeamColor() != teamColor) {
+            moves.add(new ChessMove(myPosition, newPosition));  // space occupied by enemy
+            return false;
         }
 
-        return true;
+        return false;
     }
 }

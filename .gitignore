@@ -12,7 +12,6 @@ out/
 ### Chess project ###
 server/**/db.properties
 
-
 ### classpath, project, and settings files
 **.classpath
 **.project
