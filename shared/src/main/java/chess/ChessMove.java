@@ -12,4 +12,12 @@ public record ChessMove(ChessPosition startPosition, ChessPosition endPosition,
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
         this(startPosition, endPosition, null);
     }
+
+    public ChessPosition getStartPosition() {
+        return startPosition;
+    }
+
+    public ChessPosition getEndPosition() {
+        return endPosition;
+    }
 }
