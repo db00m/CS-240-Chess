@@ -49,7 +49,10 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null) { return null; }
+
+        return piece.pieceMoves(board, startPosition); // TODO:  Check if each move is valid (won't put king in danger)
     }
 
     /**
@@ -69,6 +72,8 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        // find team color king
+        // Check if any pieces from other team can attack
         throw new RuntimeException("Not implemented");
     }
 
@@ -79,6 +84,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        // Check if all moves the king can make keep it in check
         throw new RuntimeException("Not implemented");
     }
 
@@ -90,6 +96,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        // check if any piece of teamColor
         throw new RuntimeException("Not implemented");
     }
 

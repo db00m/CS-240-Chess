@@ -12,7 +12,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessPiece {
+public class ChessPiece implements Cloneable {
 
     final static Map<PieceType, String> WHITE_PIECE_MAPPING = Map.of(
             PieceType.PAWN, "P",
@@ -36,6 +36,22 @@ public class ChessPiece {
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.teamColor = pieceColor;
         this.type = type;
+    }
+
+    public static void main(String [] args) {
+        ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, PieceType.KING);
+        ChessPiece clone = piece.clone();
+
+        System.out.println(clone.teamColor);
+    }
+
+    @Override
+    public ChessPiece clone() {
+        try {
+            return (ChessPiece) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 
     /**
