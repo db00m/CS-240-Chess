@@ -84,6 +84,10 @@ public class ChessGame {
             throw new InvalidMoveException("No piece at move start position");
         }
 
+        if (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move)) {
+            throw new InvalidMoveException("Move break piece movement rules");
+        }
+
         // TODO: How can I detect if move is castle or en passant?
 
         if (move.promotionPiece() != null) {
@@ -132,7 +136,7 @@ public class ChessGame {
     }
 
     private TeamColor getEnemyColor(TeamColor teamColor) {
-        return teamColor == TeamColor.WHITE ? TeamColor.WHITE : TeamColor.BLACK;
+        return teamColor == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
     /**
