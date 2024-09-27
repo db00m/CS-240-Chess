@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -15,6 +17,7 @@ public class ChessGame {
 
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
+        this.board = new ChessBoard();
     }
 
     /**
@@ -50,9 +53,9 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-        if (piece == null) { return null; }
+        if (piece == null || piece.getTeamColor() == teamTurn) { return null; }
 
-        return piece.pieceMoves(board, startPosition); // TODO:  Check if each move is valid (won't put king in danger)
+        return piece.pieceMoves(board, startPosition);
     }
 
     /**
@@ -62,7 +65,42 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessBoard newBoard = testMove(move);
+        setBoard(newBoard);
+    }
+
+    /**
+     * Clones board and tests move.  If move is invalid, the method will throw an exception. Board is set to
+     * original at end of method (no impact on actual game).
+     * @param move move to test.
+     * @return board with test move preformed.
+     * @throws InvalidMoveException if move is invalid.
+     */
+    private ChessBoard testMove(ChessMove move) throws InvalidMoveException {
+        var boardClone = board.clone();
+        ChessPiece pieceToMove = board.getPiece(move.startPosition());
+
+        if (pieceToMove == null) {
+            throw new InvalidMoveException("No piece at move start position");
+        }
+
+        // TODO: How can I detect if move is castle or en passant?
+
+        if (move.promotionPiece() != null) {
+            pieceToMove = new ChessPiece(pieceToMove.getTeamColor(), move.promotionPiece());
+        }
+
+        board.addPiece(move.startPosition(), null);
+        board.addPiece(move.endPosition(), pieceToMove); // capture occurs automatically
+
+        if (isInCheck(teamTurn)) {
+            setBoard(boardClone);
+            throw new InvalidMoveException("Move puts king in check");
+        }
+
+        ChessBoard resultBoard = board.clone();
+        setBoard(boardClone);
+        return resultBoard;
     }
 
     /**
@@ -72,9 +110,29 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        // find team color king
-        // Check if any pieces from other team can attack
-        throw new RuntimeException("Not implemented");
+        ChessPosition teamKingPosition = board.getTeamKingPosition(teamColor);
+        return enemyEndPositions(teamColor).contains(teamKingPosition);
+    }
+
+    private Collection<ChessPosition> enemyEndPositions(TeamColor teamColor) {
+        Set<ChessPosition> endPositions = new HashSet<>();
+        Collection<ChessPosition> startPositions = board.getTeamPiecePositions(getEnemyColor(teamColor));
+
+        for (ChessPosition startPosition : startPositions) {
+            ChessPiece piece = board.getPiece(startPosition);
+            if (piece == null) { continue; }
+
+            Collection<ChessMove> pieceMoves = piece.pieceMoves(board, startPosition);
+            for (ChessMove move : pieceMoves) {
+                endPositions.add(move.getEndPosition());
+            }
+        }
+
+        return endPositions;
+    }
+
+    private TeamColor getEnemyColor(TeamColor teamColor) {
+        return teamColor == TeamColor.WHITE ? TeamColor.WHITE : TeamColor.BLACK;
     }
 
     /**

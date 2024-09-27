@@ -1,8 +1,6 @@
 package chess;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -39,6 +37,41 @@ public class ChessBoard implements Cloneable {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return boardMatrix[position.row()-1][position.col()-1];
+    }
+
+    public Collection<ChessPosition> getTeamPiecePositions(ChessGame.TeamColor teamColor) {
+        Set<ChessPosition> positions = new HashSet<>();
+
+        for (int row = 1; row < 9; row++) {
+            for (int col = 1; col < 9; col++) {
+                var position = new ChessPosition(row, col);
+                ChessPiece piece = getPiece(position);
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    positions.add(position);
+                }
+            }
+        }
+
+        return positions;
+    }
+
+    /**
+     *
+     * @param teamColor Color of king you want
+     * @return position of king, or null if not found
+     */
+    public ChessPosition getTeamKingPosition(ChessGame.TeamColor teamColor) {
+        for (int row = 1; row < 9; row++) {
+            for (int col = 1; col < 9; col++) {
+                var position = new ChessPosition(row, col);
+                ChessPiece piece = getPiece(position);
+                if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    return new ChessPosition(row, col);
+                }
+            }
+        }
+
+        return null; // might want to raise an exception here
     }
 
     /**
@@ -121,9 +154,7 @@ public class ChessBoard implements Cloneable {
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     ChessPiece piece = boardMatrix[i][j];
-                    if (piece == null) {
-                        cloneBoardMatrix[i][j] = null;
-                    } else {
+                    if (piece != null) {
                         cloneBoardMatrix[i][j] = piece.clone();
                     }
                 }

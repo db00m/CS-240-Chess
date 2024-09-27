@@ -13,11 +13,11 @@ public record ChessMove(ChessPosition startPosition, ChessPosition endPosition,
         this(startPosition, endPosition, null);
     }
 
-    public ChessPosition getStartPosition() {
+    public ChessPosition getStartPosition() { // Required for tests
         return startPosition;
     }
 
-    public ChessPosition getEndPosition() {
+    public ChessPosition getEndPosition() {  // Required for tests
         return endPosition;
     }
 }

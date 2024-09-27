@@ -30,8 +30,8 @@ public class ChessPiece implements Cloneable {
             PieceType.KING, "k",
             PieceType.BISHOP, "b");
 
-    ChessGame.TeamColor teamColor;
-    PieceType type;
+    private final ChessGame.TeamColor teamColor;
+    private final PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.teamColor = pieceColor;
