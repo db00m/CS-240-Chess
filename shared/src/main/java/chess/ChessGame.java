@@ -52,10 +52,20 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        Set<ChessMove> checkedMoves = new HashSet<>();
         ChessPiece piece = board.getPiece(startPosition);
-        if (piece == null || piece.getTeamColor() == teamTurn) { return null; }
+        if (piece == null || piece.getTeamColor() != teamTurn) { return checkedMoves; }
 
-        return piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> uncheckedMoves = piece.pieceMoves(board, startPosition);
+
+        for (ChessMove move : uncheckedMoves) {
+            ChessBoard testBoard = testMove(move);
+            if (testBoard != null) {
+                checkedMoves.add(move);
+            }
+        }
+
+        return checkedMoves;
     }
 
     /**
@@ -66,6 +76,9 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessBoard newBoard = testMove(move);
+        if (newBoard == null) {
+            throw new InvalidMoveException("Move is invalid");
+        }
         setBoard(newBoard);
     }
 
@@ -73,19 +86,18 @@ public class ChessGame {
      * Clones board and tests move.  If move is invalid, the method will throw an exception. Board is set to
      * original at end of method (no impact on actual game).
      * @param move move to test.
-     * @return board with test move preformed.
-     * @throws InvalidMoveException if move is invalid.
+     * @return board with test move preformed, or null if move is invalid.
      */
-    private ChessBoard testMove(ChessMove move) throws InvalidMoveException {
+    private ChessBoard testMove(ChessMove move) {
         var boardClone = board.clone();
         ChessPiece pieceToMove = board.getPiece(move.startPosition());
 
         if (pieceToMove == null) {
-            throw new InvalidMoveException("No piece at move start position");
+            return null;
         }
 
         if (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move)) {
-            throw new InvalidMoveException("Move break piece movement rules");
+            return null;
         }
 
         // TODO: How can I detect if move is castle or en passant?
@@ -99,7 +111,7 @@ public class ChessGame {
 
         if (isInCheck(teamTurn)) {
             setBoard(boardClone);
-            throw new InvalidMoveException("Move puts king in check");
+            return null;
         }
 
         ChessBoard resultBoard = board.clone();
