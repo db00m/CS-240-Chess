@@ -54,7 +54,7 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Set<ChessMove> checkedMoves = new HashSet<>();
         ChessPiece piece = board.getPiece(startPosition);
-        if (piece == null || piece.getTeamColor() != teamTurn) { return checkedMoves; }
+        if (piece == null) { return checkedMoves; }
 
         Collection<ChessMove> uncheckedMoves = piece.pieceMoves(board, startPosition);
 
@@ -109,7 +109,7 @@ public class ChessGame {
         board.addPiece(move.startPosition(), null);
         board.addPiece(move.endPosition(), pieceToMove); // capture occurs automatically
 
-        if (isInCheck(teamTurn)) {
+        if (isInCheck(pieceToMove.getTeamColor())) {
             setBoard(boardClone);
             return null;
         }
@@ -159,7 +159,8 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         // Check if all moves the king can make keep it in check
-        throw new RuntimeException("Not implemented");
+
+        return false;
     }
 
     /**
