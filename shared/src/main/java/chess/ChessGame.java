@@ -18,6 +18,7 @@ public class ChessGame {
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
         this.board = new ChessBoard();
+        this.board.resetBoard();
     }
 
     /**
@@ -75,11 +76,19 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        ChessPiece pieceToMove = board.getPiece(move.startPosition());
+
+        if (pieceToMove == null || pieceToMove.getTeamColor() != teamTurn) {
+            throw new InvalidMoveException("Move is out of turn");
+        }
+
         ChessBoard newBoard = testMove(move);
+
         if (newBoard == null) {
             throw new InvalidMoveException("Move is invalid");
         }
         setBoard(newBoard);
+        setTeamTurn(getEnemyColor(teamTurn));
     }
 
     /**
@@ -92,11 +101,7 @@ public class ChessGame {
         var boardClone = board.clone();
         ChessPiece pieceToMove = board.getPiece(move.startPosition());
 
-        if (pieceToMove == null) {
-            return null;
-        }
-
-        if (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move)) {
+        if (pieceToMove == null || !pieceToMove.pieceMoves(board, move.startPosition()).contains(move)) {
             return null;
         }
 
@@ -127,6 +132,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition teamKingPosition = board.getTeamKingPosition(teamColor);
+        if (teamKingPosition == null) { return false; }
         return enemyEndPositions(teamColor).contains(teamKingPosition);
     }
 
@@ -158,7 +164,14 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        // Check if all moves the king can make keep it in check
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+
+        Collection<ChessPosition> teamPiecePositions = board.getTeamPiecePositions(teamColor);
+        for (ChessPosition position : teamPiecePositions) {
+            return validMoves(position).isEmpty();
+        }
 
         return false;
     }
@@ -172,7 +185,7 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         // check if any piece of teamColor
-        throw new RuntimeException("Not implemented");
+        return false;
     }
 
     /**
