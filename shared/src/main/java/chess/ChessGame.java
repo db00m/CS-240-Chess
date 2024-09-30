@@ -168,12 +168,18 @@ public class ChessGame {
             return false;
         }
 
+        return hasNoValidMoves(teamColor);
+    }
+
+    private boolean hasNoValidMoves(TeamColor teamColor) {
         Collection<ChessPosition> teamPiecePositions = board.getTeamPiecePositions(teamColor);
         for (ChessPosition position : teamPiecePositions) {
-            return validMoves(position).isEmpty();
+            if (!validMoves(position).isEmpty()) {
+                return false;
+            }
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -184,8 +190,11 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        // check if any piece of teamColor
-        return false;
+        if (isInCheck(teamColor)) {
+            return false;
+        }
+
+        return hasNoValidMoves(teamColor);
     }
 
     /**
