@@ -71,7 +71,20 @@ public class ChessBoard implements Cloneable {
             }
         }
 
-        return null; // might want to raise an exception here
+        return null;
+    }
+
+    public void movePiece(ChessMove move) {
+        ChessPiece pieceToMove = getPiece(move.startPosition());
+
+        if (pieceToMove == null) { return; }
+
+        if (move.promotionPiece() != null) {
+            pieceToMove = new ChessPiece(pieceToMove.getTeamColor(), move.promotionPiece());
+        }
+
+        addPiece(move.startPosition(), null);
+        addPiece(move.endPosition(), pieceToMove);
     }
 
     /**

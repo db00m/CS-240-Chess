@@ -14,6 +14,7 @@ public class ChessGame {
 
     private ChessBoard board;
     private TeamColor teamTurn;
+    private ChessMove lastMoveMade = null;
 
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
@@ -59,6 +60,12 @@ public class ChessGame {
 
         Collection<ChessMove> uncheckedMoves = piece.pieceMoves(board, startPosition);
 
+//        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+//            ChessMove enPassantMove = checkEnPassant(startPosition);
+//            if (enPassantMove != null) { uncheckedMoves.add(enPassantMove); }
+//        }
+        // TODO: Add Castle to uncheckedMoves
+
         for (ChessMove move : uncheckedMoves) {
             ChessBoard testBoard = testMove(move);
             if (testBoard != null) {
@@ -67,6 +74,40 @@ public class ChessGame {
         }
 
         return checkedMoves;
+    }
+
+
+    /**
+     * Checks if En Passant is possible.  If it is possible, the method will return a ChessMove.  If En Passant is not
+     * possible, null will be returned.
+     * @return move of MoveType enPassant if move is possible, null otherwise.
+     */
+    private ChessMove checkEnPassant(ChessPosition startPosition) {
+        if (lastMoveMade == null) { return null; }
+
+        ChessPosition lastMoveEndPosition = lastMoveMade.endPosition();
+
+        if (lastMoveEndPosition.row() != startPosition.row() || Math.abs(startPosition.col() - lastMoveEndPosition.col()) != 1) {
+            return null; // piece is not next to last move piece
+        }
+
+        ChessPiece lastMovedPiece = board.getPiece(lastMoveEndPosition);
+        int rowsMoved = lastMoveMade.startPosition().row() - lastMoveMade.endPosition().row();
+
+        if (lastMovedPiece.getPieceType() != ChessPiece.PieceType.PAWN || Math.abs(rowsMoved) < 2) {
+            return null; // last move was not double pawn
+        }
+
+        var newPosition = new ChessPosition(lastMoveEndPosition.row() - 1, lastMoveEndPosition.col());
+        return new ChessMove(ChessMove.MoveType.EN_PASSANT, startPosition, newPosition);
+    }
+    /**
+     * Checks if castle is possible.  If it is possible, the method will return a ChessMove.  If Castle is not
+     * possible, null will be returned.
+     * @return move of MoveType castle if move is possible, null otherwise.
+     */
+    private ChessMove checkCastle() {
+        throw new RuntimeException("Not Implemented");
     }
 
     /**
@@ -78,16 +119,19 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece pieceToMove = board.getPiece(move.startPosition());
 
-        if (pieceToMove == null || pieceToMove.getTeamColor() != teamTurn) {
-            throw new InvalidMoveException("Move is out of turn");
+        if (pieceToMove == null
+                || pieceToMove.getTeamColor() != teamTurn
+                || (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move) && move.moveType() == ChessMove.MoveType.BASIC)) {
+            throw new InvalidMoveException();
         }
 
         ChessBoard newBoard = testMove(move);
 
         if (newBoard == null) {
-            throw new InvalidMoveException("Move is invalid");
+            throw new InvalidMoveException();
         }
         setBoard(newBoard);
+        lastMoveMade = move;
         setTeamTurn(getEnemyColor(teamTurn));
     }
 
@@ -101,18 +145,8 @@ public class ChessGame {
         var boardClone = board.clone();
         ChessPiece pieceToMove = board.getPiece(move.startPosition());
 
-        if (pieceToMove == null || !pieceToMove.pieceMoves(board, move.startPosition()).contains(move)) {
-            return null;
-        }
-
-        // TODO: How can I detect if move is castle or en passant?
-
-        if (move.promotionPiece() != null) {
-            pieceToMove = new ChessPiece(pieceToMove.getTeamColor(), move.promotionPiece());
-        }
-
-        board.addPiece(move.startPosition(), null);
-        board.addPiece(move.endPosition(), pieceToMove); // capture occurs automatically
+        board.movePiece(move);
+//        board.enPassant(move);
 
         if (isInCheck(pieceToMove.getTeamColor())) {
             setBoard(boardClone);
