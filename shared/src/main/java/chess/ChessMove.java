@@ -8,25 +8,11 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public record ChessMove(MoveType moveType, ChessPosition startPosition, ChessPosition endPosition,
+public record ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                        ChessPiece.PieceType promotionPiece) {
 
-    public enum MoveType {
-        BASIC,
-        EN_PASSANT,
-        CASTLE
-    }
-
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
-        this(MoveType.BASIC, startPosition, endPosition, null);
-    }
-
-    public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece) {
-        this(MoveType.BASIC, startPosition, endPosition, promotionPiece);
-    }
-
-    public ChessMove(MoveType moveType, ChessPosition startPosition, ChessPosition endPosition) {
-        this(moveType, startPosition, endPosition, null);
+        this(startPosition, endPosition, null);
     }
 
     public ChessPosition getStartPosition() { // Required for tests

@@ -19,6 +19,47 @@ public class ChessBoard implements Cloneable {
     }
 
     /**
+     * Sets the board to the default starting board
+     * (How the game of chess normally starts)
+     */
+    public void resetBoard() {
+        for (ChessGame.TeamColor teamColor : ChessGame.TeamColor.values()) {
+
+            // Add pawns
+            for (int i = 0; i < 8; i++) {
+                var pawn = new ChessPiece(teamColor, ChessPiece.PieceType.PAWN);
+                addPiece(pawn.startingPosition(i), pawn);
+            }
+
+            // Add 2 count pieces
+
+            for (int i = 0; i < 2; i++) {
+                ChessPiece[] doublePieces = {
+                        new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP),
+                        new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT),
+                        new ChessPiece(teamColor, ChessPiece.PieceType.ROOK)
+                };
+
+                for (ChessPiece piece : doublePieces) {
+                    addPiece(piece.startingPosition(i), piece);
+                }
+            }
+
+            // add King and Queen
+
+            ChessPiece[] royalPieces = {
+                    new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN),
+                    new ChessPiece(teamColor, ChessPiece.PieceType.KING)
+            };
+
+            for (ChessPiece piece : royalPieces) {
+                addPiece(piece.startingPosition(0), piece);
+            }
+        }
+    }
+
+
+    /**
      * Adds a chess piece to the chessboard
      *
      * @param position where to add the piece to
@@ -87,44 +128,13 @@ public class ChessBoard implements Cloneable {
         addPiece(move.endPosition(), pieceToMove);
     }
 
-    /**
-     * Sets the board to the default starting board
-     * (How the game of chess normally starts)
-     */
-    public void resetBoard() {
-        for (ChessGame.TeamColor teamColor : ChessGame.TeamColor.values()) {
+    public void handleEnPassant(ChessMove move) {
+        var capturedPosition = new ChessPosition(move.startPosition().row(), move.endPosition().col());
+        ChessPiece pieceToMove = getPiece(move.startPosition());
 
-            // Add pawns
-            for (int i = 0; i < 8; i++) {
-                var pawn = new ChessPiece(teamColor, ChessPiece.PieceType.PAWN);
-                addPiece(pawn.startingPosition(i), pawn);
-            }
-
-            // Add 2 count pieces
-
-            for (int i = 0; i < 2; i++) {
-                ChessPiece[] doublePieces = {
-                        new ChessPiece(teamColor, ChessPiece.PieceType.BISHOP),
-                        new ChessPiece(teamColor, ChessPiece.PieceType.KNIGHT),
-                        new ChessPiece(teamColor, ChessPiece.PieceType.ROOK)
-                };
-
-                for (ChessPiece piece : doublePieces) {
-                    addPiece(piece.startingPosition(i), piece);
-                }
-            }
-
-            // add King and Queen
-
-            ChessPiece[] royalPieces = {
-                    new ChessPiece(teamColor, ChessPiece.PieceType.QUEEN),
-                    new ChessPiece(teamColor, ChessPiece.PieceType.KING)
-            };
-
-            for (ChessPiece piece : royalPieces) {
-                addPiece(piece.startingPosition(0), piece);
-            }
-        }
+        addPiece(move.startPosition(), null);
+        addPiece(move.endPosition(), pieceToMove);
+        addPiece(capturedPosition, null);
     }
 
     @Override

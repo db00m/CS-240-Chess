@@ -32,6 +32,7 @@ public class ChessPiece implements Cloneable {
 
     private final ChessGame.TeamColor teamColor;
     private final PieceType type;
+    private boolean moved = false;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
         this.teamColor = pieceColor;
@@ -78,6 +79,10 @@ public class ChessPiece implements Cloneable {
      */
     public PieceType getPieceType() {
         return type;
+    }
+
+    public boolean hasMoved() {
+        return moved;
     }
 
     public ChessPosition startingPosition(int pieceIndex) {

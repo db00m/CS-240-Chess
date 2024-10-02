@@ -60,10 +60,10 @@ public class ChessGame {
 
         Collection<ChessMove> uncheckedMoves = piece.pieceMoves(board, startPosition);
 
-//        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-//            ChessMove enPassantMove = checkEnPassant(startPosition);
-//            if (enPassantMove != null) { uncheckedMoves.add(enPassantMove); }
-//        }
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            ChessMove enPassantMove = checkEnPassant(startPosition);
+            if (enPassantMove != null) { uncheckedMoves.add(enPassantMove); }
+        }
         // TODO: Add Castle to uncheckedMoves
 
         for (ChessMove move : uncheckedMoves) {
@@ -98,8 +98,10 @@ public class ChessGame {
             return null; // last move was not double pawn
         }
 
-        var newPosition = new ChessPosition(lastMoveEndPosition.row() - 1, lastMoveEndPosition.col());
-        return new ChessMove(ChessMove.MoveType.EN_PASSANT, startPosition, newPosition);
+        int direction = lastMovedPiece.getTeamColor() == TeamColor.WHITE ? -1 : 1;
+
+        var newPosition = new ChessPosition(lastMoveEndPosition.row() + direction, lastMoveEndPosition.col());
+        return new ChessMove(startPosition, newPosition);
     }
     /**
      * Checks if castle is possible.  If it is possible, the method will return a ChessMove.  If Castle is not
@@ -121,7 +123,7 @@ public class ChessGame {
 
         if (pieceToMove == null
                 || pieceToMove.getTeamColor() != teamTurn
-                || (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move) && move.moveType() == ChessMove.MoveType.BASIC)) {
+                || (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move) && !isEnPassant(move))) {
             throw new InvalidMoveException();
         }
 
@@ -145,8 +147,11 @@ public class ChessGame {
         var boardClone = board.clone();
         ChessPiece pieceToMove = board.getPiece(move.startPosition());
 
-        board.movePiece(move);
-//        board.enPassant(move);
+        if (isEnPassant(move)) {
+            board.handleEnPassant(move);
+        } else {
+            board.movePiece(move);
+        }
 
         if (isInCheck(pieceToMove.getTeamColor())) {
             setBoard(boardClone);
@@ -156,6 +161,14 @@ public class ChessGame {
         ChessBoard resultBoard = board.clone();
         setBoard(boardClone);
         return resultBoard;
+    }
+
+    private boolean isEnPassant(ChessMove move) {
+        ChessPiece pieceToMove = board.getPiece(move.startPosition());
+        ChessPiece pieceToCapture = board.getPiece(move.endPosition());
+        boolean isDiagonal = move.startPosition().col() != move.endPosition().col();
+
+        return pieceToMove.getPieceType() == ChessPiece.PieceType.PAWN && isDiagonal && pieceToCapture == null;
     }
 
     /**
