@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,10 +62,11 @@ public class ChessGame {
         Collection<ChessMove> uncheckedMoves = piece.pieceMoves(board, startPosition);
 
         if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-            ChessMove enPassantMove = checkEnPassant(startPosition);
+            ChessMove enPassantMove = enPassantMove(startPosition);
             if (enPassantMove != null) { uncheckedMoves.add(enPassantMove); }
+        } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+            uncheckedMoves.addAll(possibleCastleMoves(startPosition));
         }
-        // TODO: Add Castle to uncheckedMoves
 
         for (ChessMove move : uncheckedMoves) {
             ChessBoard testBoard = testMove(move);
@@ -82,7 +84,7 @@ public class ChessGame {
      * possible, null will be returned.
      * @return move of MoveType enPassant if move is possible, null otherwise.
      */
-    private ChessMove checkEnPassant(ChessPosition startPosition) {
+    private ChessMove enPassantMove(ChessPosition startPosition) {
         if (lastMoveMade == null) { return null; }
 
         ChessPosition lastMoveEndPosition = lastMoveMade.endPosition();
@@ -103,13 +105,58 @@ public class ChessGame {
         var newPosition = new ChessPosition(lastMoveEndPosition.row() + direction, lastMoveEndPosition.col());
         return new ChessMove(startPosition, newPosition);
     }
+
     /**
-     * Checks if castle is possible.  If it is possible, the method will return a ChessMove.  If Castle is not
-     * possible, null will be returned.
-     * @return move of MoveType castle if move is possible, null otherwise.
+     * Checks if castle is possible.  If it is possible, the method will return a Collection of ChessMoves.  If Castle is not
+     * possible, an empty collection will be returned.
+     * @return collection of all possible castle moves.
      */
-    private ChessMove checkCastle() {
-        throw new RuntimeException("Not Implemented");
+    private Collection<ChessMove> possibleCastleMoves(ChessPosition startingPosition) {
+        ChessPiece king = board.getPiece(startingPosition);
+
+        if (king == null || king.getPieceType() != ChessPiece.PieceType.KING || king.hasMoved() || !king.startingPosition(0).equals(startingPosition)) {
+            return Collections.emptySet();
+        }
+
+        Set<ChessMove> castleMoves = new HashSet<>();
+
+        ChessPiece rook = board.getPiece(new ChessPosition(startingPosition.row(), 1)); // Queen Side
+        Set<ChessPosition> clearedSpaces = new HashSet<>();
+        Collection<ChessPosition> enemyEndPositions = enemyEndPositions(king.getTeamColor());
+
+        if (rook != null && !rook.hasMoved()) {
+            for (int i = 2; i < 5; i++) {
+                var testPosition = new ChessPosition(startingPosition.row(), i);
+                ChessPiece blockingPiece = board.getPiece(testPosition);
+                if (blockingPiece == null) {
+                    clearedSpaces.add(testPosition);
+                }
+            }
+
+            if (clearedSpaces.size() == 3 && Collections.disjoint(enemyEndPositions, clearedSpaces)) {
+                var newKingPosition = new ChessPosition(startingPosition.row(), 3);
+                castleMoves.add(new ChessMove(startingPosition, newKingPosition));
+            }
+        }
+
+        rook = board.getPiece(new ChessPosition(startingPosition.row(), 8)); // King Side
+        clearedSpaces.clear();
+        if (rook != null && !rook.hasMoved()) {
+            for (int i = 7; i > 5; i--) {
+                var testPosition = new ChessPosition(startingPosition.row(), i);
+                ChessPiece blockingPiece = board.getPiece(testPosition);
+                if (blockingPiece == null) {
+                    clearedSpaces.add(testPosition);
+                }
+            }
+
+            if (clearedSpaces.size() == 2 && Collections.disjoint(enemyEndPositions, clearedSpaces)) {
+                var newKingPosition = new ChessPosition(startingPosition.row(), 7);
+                castleMoves.add(new ChessMove(startingPosition, newKingPosition));
+            }
+        }
+
+        return castleMoves;
     }
 
     /**
@@ -123,7 +170,7 @@ public class ChessGame {
 
         if (pieceToMove == null
                 || pieceToMove.getTeamColor() != teamTurn
-                || (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move) && !isEnPassant(move))) {
+                || (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move) && !isEnPassant(move) && !isCastle(move))) {
             throw new InvalidMoveException();
         }
 
@@ -149,6 +196,8 @@ public class ChessGame {
 
         if (isEnPassant(move)) {
             board.handleEnPassant(move);
+        } else if (isCastle(move)) {
+            board.handleCastle(move);
         } else {
             board.movePiece(move);
         }
@@ -164,11 +213,22 @@ public class ChessGame {
     }
 
     private boolean isEnPassant(ChessMove move) {
+        if (move.startPosition().row() != 5 && move.startPosition().row() != 4) {
+            return false;
+        }
+
         ChessPiece pieceToMove = board.getPiece(move.startPosition());
         ChessPiece pieceToCapture = board.getPiece(move.endPosition());
         boolean isDiagonal = move.startPosition().col() != move.endPosition().col();
 
         return pieceToMove.getPieceType() == ChessPiece.PieceType.PAWN && isDiagonal && pieceToCapture == null;
+    }
+
+    private boolean isCastle(ChessMove move) {
+        ChessPiece pieceToMove = board.getPiece(move.startPosition());
+        int distance = Math.abs(move.startPosition().col() - move.endPosition().col());
+
+        return pieceToMove.getPieceType() == ChessPiece.PieceType.KING && distance > 1;
     }
 
     /**

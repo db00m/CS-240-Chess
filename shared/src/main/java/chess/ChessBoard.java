@@ -126,6 +126,7 @@ public class ChessBoard implements Cloneable {
 
         addPiece(move.startPosition(), null);
         addPiece(move.endPosition(), pieceToMove);
+        pieceToMove.setMoved();
     }
 
     public void handleEnPassant(ChessMove move) {
@@ -135,6 +136,26 @@ public class ChessBoard implements Cloneable {
         addPiece(move.startPosition(), null);
         addPiece(move.endPosition(), pieceToMove);
         addPiece(capturedPosition, null);
+        pieceToMove.setMoved();
+    }
+
+    public void handleCastle(ChessMove move) {
+        boolean isQueenSide = move.startPosition().col() > move.endPosition().col();
+        ChessPosition rookPosition = isQueenSide ? new ChessPosition(move.startPosition().row(), 1) : new ChessPosition(move.startPosition().row(), 8);
+        ChessPiece rook = getPiece(rookPosition);
+        ChessPiece king = getPiece(move.startPosition());
+
+        if (isQueenSide) {
+            addPiece(new ChessPosition(rookPosition.row(), 3), king);
+            addPiece(move.startPosition(), null);
+            addPiece(new ChessPosition(rookPosition.row(), 4), rook);
+            addPiece(rookPosition, null);
+        } else {
+            addPiece(new ChessPosition(rookPosition.row(), 7), king);
+            addPiece(move.startPosition(), null);
+            addPiece(new ChessPosition(rookPosition.row(), 6), rook);
+            addPiece(rookPosition, null);
+        }
     }
 
     @Override

@@ -85,6 +85,10 @@ public class ChessPiece implements Cloneable {
         return moved;
     }
 
+    public void setMoved() {
+        moved = true;
+    }
+
     public ChessPosition startingPosition(int pieceIndex) {
         return new ChessPosition(startingRow(), startingCol(pieceIndex));
     }
