@@ -10,15 +10,16 @@ import spark.*;
 
 public class RegisterHandler implements Route {
 
-    private final ObjectSerializer serializer = new ObjectSerializer();
 
     @Override
     public Object handle(Request request, Response response) {
-        UserService service = new UserService();
+        ObjectSerializer serializer = new ObjectSerializer();
 
         RegisterRequest registerRequest = serializer.fromJson(request.body(), RegisterRequest.class);
 
         try {
+            var service = new UserService();
+
             registerRequest.validate();
             service.registerUser(registerRequest);
 
@@ -27,6 +28,8 @@ public class RegisterHandler implements Route {
             ResponseUtil.prepareResponse(new BasicResponse(exc.getMessage()), 401, serializer, response);
         } catch(InvalidRequestException exc) {
             ResponseUtil.prepareResponse(new BasicResponse(exc.getMessage()), 400, serializer, response);
+        } catch(RuntimeException exc) {
+            ResponseUtil.prepareResponse(new BasicResponse(exc.getMessage()), 500, serializer, response);
         }
 
         return response.body();
