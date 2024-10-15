@@ -1,6 +1,5 @@
 package handlers;
 
-import com.google.gson.Gson;
 import requests.LoginRequest;
 import responses.LoginResponse;
 import serialize.ObjectSerializer;
@@ -16,8 +15,8 @@ public class LoginHandler implements Route {
 
     @Override
     public Object handle(Request request, Response response) {
-        var requestDeserializer = new ObjectSerializer<LoginRequest>();
-        var responseSerializer = new ObjectSerializer<LoginResponse>();
+        var requestDeserializer = new ObjectSerializer();
+        var responseSerializer = new ObjectSerializer();
 
         LoginRequest loginRequest = requestDeserializer.fromJson(request.body(), LoginRequest.class);
 

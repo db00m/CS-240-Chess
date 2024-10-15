@@ -1,6 +1,6 @@
 package handlers;
 
-import com.google.gson.Gson;
+import requests.InvalidRequestException;
 import requests.RegisterRequest;
 import responses.BasicResponse;
 import serialize.ObjectSerializer;
@@ -10,25 +10,25 @@ import spark.*;
 
 public class RegisterHandler implements Route {
 
+    private final ObjectSerializer serializer = new ObjectSerializer();
+
     @Override
     public Object handle(Request request, Response response) {
         UserService service = new UserService();
-        ObjectSerializer<RegisterRequest> requestDeserializer = new ObjectSerializer<>();
-        ObjectSerializer<BasicResponse> responseSerializer = new ObjectSerializer<>();
 
-        RegisterRequest registerRequest = requestDeserializer.fromJson(request.body(), RegisterRequest.class);
+        RegisterRequest registerRequest = serializer.fromJson(request.body(), RegisterRequest.class);
 
         try {
+            registerRequest.validate();
             service.registerUser(registerRequest);
-            String body = responseSerializer.toJson(new BasicResponse());
-            response.status(200);
-            response.body(body);
-            return body;
+
+            ResponseUtil.prepareResponse(new BasicResponse(), 200, serializer, response);
         } catch(ValidationException exc) {
-            String body = responseSerializer.toJson(new BasicResponse(exc.getMessage()));
-            response.status(403);
-            response.body(body);
-            return body;
+            ResponseUtil.prepareResponse(new BasicResponse(exc.getMessage()), 401, serializer, response);
+        } catch(InvalidRequestException exc) {
+            ResponseUtil.prepareResponse(new BasicResponse(exc.getMessage()), 400, serializer, response);
         }
+
+        return response.body();
     }
 }

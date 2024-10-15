@@ -2,14 +2,14 @@ package serialize;
 
 import com.google.gson.Gson;
 
-public class ObjectSerializer<T> {
+public class ObjectSerializer {
     private final Gson serializer = new Gson();
 
-    public String toJson(T object) {
+    public <T> String toJson(T object) {
         return serializer.toJson(object);
     }
 
-    public T fromJson(String jsonString, Class<T> object) {
+    public <T> T fromJson(String jsonString, Class<T> object) {
         return serializer.fromJson(jsonString, object);
     }
 }

@@ -16,3 +16,7 @@ server/**/db.properties
 **.classpath
 **.project
 **.settings
+
+
+### IntelliJ files
+.idea/
