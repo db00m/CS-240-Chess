@@ -8,5 +8,6 @@ import java.util.UUID;
 public interface AuthTokenDAO {
     void addAuth(UUID token, UserModel user);
     UserModel getUserByToken(UUID authToken);
+    void delete(UUID authToken);
     void clearTokens();
 }

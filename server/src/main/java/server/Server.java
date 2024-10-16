@@ -1,6 +1,7 @@
 package server;
 
 import handlers.LoginHandler;
+import handlers.LogoutHandler;
 import handlers.RegisterHandler;
 import spark.*;
 
@@ -11,8 +12,11 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        Spark.post("/users", new RegisterHandler());
-        Spark.post("/login", new LoginHandler());
+        Spark.post("/user", new RegisterHandler());
+
+        Spark.post("/session", new LoginHandler());
+        Spark.delete("/session", new LogoutHandler());
+
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
 

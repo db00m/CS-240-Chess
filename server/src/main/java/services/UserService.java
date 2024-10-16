@@ -39,4 +39,10 @@ public class UserService {
 
         return authToken;
     }
+
+    public void logoutUser(UUID authToken) throws UnauthorizedException {
+        AuthorizationService.authorize(authToken);
+
+        authTokenDAO.delete(authToken);
+    }
 }
