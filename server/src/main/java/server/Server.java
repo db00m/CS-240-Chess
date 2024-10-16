@@ -1,5 +1,6 @@
 package server;
 
+import handlers.ClearDBHandler;
 import handlers.LoginHandler;
 import handlers.LogoutHandler;
 import handlers.RegisterHandler;
@@ -11,6 +12,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.delete("/db", new ClearDBHandler());
 
         Spark.post("/user", new RegisterHandler());
 
