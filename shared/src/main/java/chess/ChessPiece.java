@@ -39,13 +39,6 @@ public class ChessPiece implements Cloneable {
         this.type = type;
     }
 
-    public static void main(String [] args) {
-        ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, PieceType.KING);
-        ChessPiece clone = piece.clone();
-
-        System.out.println(clone.teamColor);
-    }
-
     @Override
     public ChessPiece clone() {
         try {

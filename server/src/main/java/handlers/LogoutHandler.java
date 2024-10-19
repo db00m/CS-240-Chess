@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class LogoutHandler implements Route {
     @Override
-    public Object handle(Request request, Response response) throws Exception {
+    public Object handle(Request request, Response response) {
         var serializer  = new ObjectSerializer();
 
         try {
