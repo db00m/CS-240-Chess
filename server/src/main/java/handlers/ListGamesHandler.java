@@ -19,7 +19,8 @@ public class ListGamesHandler implements Route {
         var serializer  = new ObjectSerializer();
 
         try {
-            AuthorizationService.authorize(UUID.fromString(request.headers("Authorization")));
+            String authTokenString = request.headers("Authorization");
+            AuthorizationService.authorize(request.headers("Authorization"));
 
             var service = new GameService();
 

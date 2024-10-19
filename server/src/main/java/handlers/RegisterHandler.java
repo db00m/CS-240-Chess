@@ -1,12 +1,16 @@
 package handlers;
 
 import requests.InvalidRequestException;
+import requests.LoginRequest;
 import requests.RegisterRequest;
 import responses.BasicResponse;
+import responses.LoginResponse;
 import serialize.ObjectSerializer;
 import services.UserService;
 import services.ValidationException;
 import spark.*;
+
+import java.util.UUID;
 
 public class RegisterHandler implements Route {
 
@@ -23,13 +27,15 @@ public class RegisterHandler implements Route {
             registerRequest.validate();
             service.registerUser(registerRequest);
 
-            ResponseUtil.prepareResponse(new BasicResponse(), 200, serializer, response);
+            UUID authToken = service.loginUser(new LoginRequest(registerRequest.username(), registerRequest.password()));
+
+            ResponseUtil.prepareResponse(new LoginResponse(registerRequest.username(), authToken), 200, serializer, response);
         } catch(ValidationException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse(exc.getMessage()), 401, serializer, response);
+            ResponseUtil.prepareResponse(new LoginResponse(exc.getMessage()), 401, serializer, response);
         } catch(InvalidRequestException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse(exc.getMessage()), 400, serializer, response);
+            ResponseUtil.prepareResponse(new LoginResponse(exc.getMessage()), 400, serializer, response);
         } catch(RuntimeException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse(exc.getMessage()), 500, serializer, response);
+            ResponseUtil.prepareResponse(new LoginResponse(exc.getMessage()), 500, serializer, response);
         }
 
         return response.body();
