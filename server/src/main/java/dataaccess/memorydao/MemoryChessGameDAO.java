@@ -14,9 +14,10 @@ public class MemoryChessGameDAO implements ChessGameDAO {
     private static int lastID = 0;
 
     @Override
-    public void add(ChessGameModel game) {
+    public int add(String gameName) {
         lastID++;
-        gamesTable.put(lastID, game);
+        gamesTable.put(lastID, new ChessGameModel(lastID, gameName));
+        return lastID;
     }
 
     @Override

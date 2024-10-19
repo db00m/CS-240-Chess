@@ -7,8 +7,14 @@ import models.ChessGameModel;
 import java.util.Collection;
 
 public class GameService {
+
+    private final ChessGameDAO chessGameDAO = new MemoryChessGameDAO();
+
     public Collection<ChessGameModel> listGames() {
-        ChessGameDAO chessGameDAO = new MemoryChessGameDAO();
         return chessGameDAO.getAll();
+    }
+
+    public int createGame(String gameName) {
+        return chessGameDAO.add(gameName);
     }
 }
