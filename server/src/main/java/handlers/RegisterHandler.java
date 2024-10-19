@@ -31,11 +31,11 @@ public class RegisterHandler implements Route {
 
             ResponseUtil.prepareResponse(new LoginResponse(registerRequest.username(), authToken), 200, serializer, response);
         } catch(ValidationException exc) {
-            ResponseUtil.prepareResponse(new LoginResponse(exc.getMessage()), 401, serializer, response);
+            ResponseUtil.prepareResponse(new LoginResponse("Error: " + exc.getMessage()), 403, serializer, response);
         } catch(InvalidRequestException exc) {
-            ResponseUtil.prepareResponse(new LoginResponse(exc.getMessage()), 400, serializer, response);
+            ResponseUtil.prepareResponse(new LoginResponse("Error: " + exc.getMessage()), 400, serializer, response);
         } catch(RuntimeException exc) {
-            ResponseUtil.prepareResponse(new LoginResponse(exc.getMessage()), 500, serializer, response);
+            ResponseUtil.prepareResponse(new LoginResponse("Error: " + exc.getMessage()), 500, serializer, response);
         }
 
         return response.body();

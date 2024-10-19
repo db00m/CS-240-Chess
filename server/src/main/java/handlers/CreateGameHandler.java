@@ -23,16 +23,16 @@ public class CreateGameHandler implements Route {
             createRequest.validate();
 
             var service = new GameService();
-            int gameId = service.createGame(createRequest.gameName());
+            int gameID = service.createGame(createRequest.gameName());
 
-            ResponseUtil.prepareResponse(new CreateGameResponse(gameId), 200, serializer, response);
+            ResponseUtil.prepareResponse(new CreateGameResponse(gameID), 200, serializer, response);
 
         } catch(UnauthorizedException exc) {
-            ResponseUtil.prepareResponse(new CreateGameResponse(exc.getMessage()), 401, serializer, response);
+            ResponseUtil.prepareResponse(new CreateGameResponse("Error: " + exc.getMessage()), 401, serializer, response);
         } catch(InvalidRequestException exc) {
-            ResponseUtil.prepareResponse(new CreateGameResponse(exc.getMessage()), 400, serializer, response);
+            ResponseUtil.prepareResponse(new CreateGameResponse("Error: " + exc.getMessage()), 400, serializer, response);
         } catch(RuntimeException exc) {
-            ResponseUtil.prepareResponse(new CreateGameResponse(exc.getMessage()), 500, serializer, response);
+            ResponseUtil.prepareResponse(new CreateGameResponse("Error: " + exc.getMessage()), 500, serializer, response);
         }
 
         return response.body();
