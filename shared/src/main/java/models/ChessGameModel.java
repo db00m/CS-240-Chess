@@ -1,20 +1,20 @@
 package models;
 
 public class ChessGameModel {
-    private final int gameId;
+    private final int gameID;
     private final String gameName;
     private String whiteUsername;
     private String blackUsername;
 
-    public ChessGameModel(int gameId, String gameName, String whiteUsername, String blackUsername) {
-        this.gameId = gameId;
+    public ChessGameModel(int gameID, String gameName, String whiteUsername, String blackUsername) {
+        this.gameID = gameID;
         this.gameName = gameName;
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;
     }
 
-    public ChessGameModel(int gameId, String gameName) {
-        this.gameId = gameId;
+    public ChessGameModel(int gameID, String gameName) {
+        this.gameID = gameID;
         this.gameName = gameName;
     }
 
@@ -26,8 +26,8 @@ public class ChessGameModel {
         this.blackUsername = username;
     }
 
-    public int getGameId() {
-        return gameId;
+    public int getGameID() {
+        return gameID;
     }
 
     public String getGameName() {

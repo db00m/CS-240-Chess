@@ -15,7 +15,7 @@ public class ClearDBHandler implements Route {
             new DBService().clearDB();
             ResponseUtil.prepareResponse(new BasicResponse(), 200, serializer, response);
         } catch(RuntimeException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse(exc.getMessage()), 500, serializer, response);
+            ResponseUtil.prepareResponse(new BasicResponse("Error: " + exc.getMessage()), 500, serializer, response);
         }
 
         return response.body();

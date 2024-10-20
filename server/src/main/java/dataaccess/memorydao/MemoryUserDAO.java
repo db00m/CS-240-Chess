@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class MemoryUserDAO implements UserDAO {
 
-    private static Map<String, UserModel> usersTable = new HashMap<>();
+    private static final Map<String, UserModel> usersTable = new HashMap<>();
 
     @Override
     public void saveUser(UserModel user) {
@@ -21,6 +21,6 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     public void clearTable() {
-        usersTable = new HashMap<>();
+        usersTable.clear();
     }
 }

@@ -26,9 +26,9 @@ public class ListGamesHandler implements Route {
             Collection<ChessGameModel> games = service.listGames();
             ResponseUtil.prepareResponse(new GameListResponse(games), 200, serializer, response);
         } catch(UnauthorizedException exc) {
-            ResponseUtil.prepareResponse(new GameListResponse(exc.getMessage()), 401, serializer, response);
+            ResponseUtil.prepareResponse(new GameListResponse("Error: " + exc.getMessage()), 401, serializer, response);
         } catch(RuntimeException exc) {
-            ResponseUtil.prepareResponse(new GameListResponse(exc.getMessage()), 500, serializer, response);
+            ResponseUtil.prepareResponse(new GameListResponse("Error: " + exc.getMessage()), 500, serializer, response);
         }
         return response.body();
     }
