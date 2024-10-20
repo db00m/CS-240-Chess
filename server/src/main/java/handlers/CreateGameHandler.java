@@ -6,6 +6,7 @@ import responses.CreateGameResponse;
 import serialize.ObjectSerializer;
 import services.AuthorizationService;
 import services.GameService;
+import services.ResponseBuilder;
 import services.UnauthorizedException;
 import spark.Request;
 import spark.Response;
@@ -15,6 +16,7 @@ public class CreateGameHandler implements Route {
     @Override
     public Object handle(Request request, Response response) {
         var serializer = new ObjectSerializer();
+        var responseBuilder = new ResponseBuilder(serializer, response);
 
         try {
             AuthorizationService.authorize(request.headers("Authorization"));
@@ -25,15 +27,14 @@ public class CreateGameHandler implements Route {
             var service = new GameService();
             int gameID = service.createGame(createRequest.gameName());
 
-            ResponseUtil.prepareResponse(new CreateGameResponse(gameID), 200, serializer, response);
+            responseBuilder.prepareSuccessResponse(new CreateGameResponse(gameID));
 
         } catch(UnauthorizedException exc) {
-            ResponseUtil.prepareResponse(new CreateGameResponse("Error: " + exc.getMessage()), 401, serializer, response);
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 401);
         } catch(InvalidRequestException exc) {
-            ResponseUtil.prepareResponse(new CreateGameResponse("Error: " + exc.getMessage()), 400, serializer, response);
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 400);
         } catch(RuntimeException exc) {
-            ResponseUtil.prepareResponse(new CreateGameResponse("Error: " + exc.getMessage()), 500, serializer, response);
-        }
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 500);        }
 
         return response.body();
     }

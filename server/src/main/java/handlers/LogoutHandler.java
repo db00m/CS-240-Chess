@@ -1,9 +1,9 @@
 package handlers;
 
-import models.UserModel;
 import responses.BasicResponse;
 import serialize.ObjectSerializer;
 import services.AuthorizationService;
+import services.ResponseBuilder;
 import services.UnauthorizedException;
 import services.UserService;
 import spark.Request;
@@ -16,6 +16,7 @@ public class LogoutHandler implements Route {
     @Override
     public Object handle(Request request, Response response) {
         var serializer  = new ObjectSerializer();
+        var responseBuilder = new ResponseBuilder(serializer, response);
 
         try {
             var userService = new UserService();
@@ -24,11 +25,11 @@ public class LogoutHandler implements Route {
 
             userService.logoutUser(UUID.fromString(authTokenString));
 
-            ResponseUtil.prepareResponse(new BasicResponse(), 200, serializer, response);
+            responseBuilder.prepareSuccessResponse(new BasicResponse());
         } catch(UnauthorizedException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse("Error: " + exc.getMessage()), 401, serializer, response);
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 401);
         } catch(RuntimeException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse("Error: " + exc.getMessage()), 500, serializer, response);
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
 
         return response.body();

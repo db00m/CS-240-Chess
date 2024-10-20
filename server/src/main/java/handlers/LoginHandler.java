@@ -4,6 +4,7 @@ import requests.InvalidRequestException;
 import requests.LoginRequest;
 import responses.LoginResponse;
 import serialize.ObjectSerializer;
+import services.ResponseBuilder;
 import services.UserService;
 import services.ValidationException;
 import spark.Request;
@@ -17,6 +18,7 @@ public class LoginHandler implements Route {
     @Override
     public Object handle(Request request, Response response) {
         var serializer = new ObjectSerializer();
+        var responseBuilder = new ResponseBuilder(serializer, response);
 
         LoginRequest loginRequest = serializer.fromJson(request.body(), LoginRequest.class);
 
@@ -26,14 +28,13 @@ public class LoginHandler implements Route {
             var userService = new UserService();
 
             UUID authToken = userService.loginUser(loginRequest);
-            ResponseUtil.prepareResponse(new LoginResponse(loginRequest.username(), authToken), 200, serializer, response);
-        } catch(ValidationException exc) {
-            ResponseUtil.prepareResponse(new LoginResponse("Error: " + exc.getMessage()), 401, serializer, response);
+            responseBuilder.prepareSuccessResponse(new LoginResponse(loginRequest.username(), authToken));
         } catch(InvalidRequestException exc) {
-            ResponseUtil.prepareResponse(new LoginResponse("Error: " + exc.getMessage()), 400, serializer, response);
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 400);
+        } catch(ValidationException exc) {
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 401);
         } catch(RuntimeException exc) {
-            ResponseUtil.prepareResponse(new LoginResponse(exc.getMessage()), 500, serializer, response);
-
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
 
         return response.body();

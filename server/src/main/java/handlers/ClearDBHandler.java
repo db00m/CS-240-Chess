@@ -3,6 +3,7 @@ package handlers;
 import responses.BasicResponse;
 import serialize.ObjectSerializer;
 import services.DBService;
+import services.ResponseBuilder;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -11,11 +12,13 @@ public class ClearDBHandler implements Route {
     @Override
     public Object handle(Request request, Response response) {
         var serializer = new ObjectSerializer();
+        var responseBuilder = new ResponseBuilder(serializer, response);
+
         try {
             new DBService().clearDB();
-            ResponseUtil.prepareResponse(new BasicResponse(), 200, serializer, response);
+            responseBuilder.prepareSuccessResponse(new BasicResponse());
         } catch(RuntimeException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse("Error: " + exc.getMessage()), 500, serializer, response);
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
 
         return response.body();

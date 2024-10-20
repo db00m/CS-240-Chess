@@ -6,10 +6,7 @@ import requests.InvalidRequestException;
 import requests.JoinGameRequest;
 import responses.BasicResponse;
 import serialize.ObjectSerializer;
-import services.AuthorizationService;
-import services.GameService;
-import services.UnauthorizedException;
-import services.ValidationException;
+import services.*;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -18,6 +15,7 @@ public class JoinGameHandler implements Route {
     @Override
     public Object handle(Request request, Response response) {
         var serializer = new ObjectSerializer();
+        var responseBuilder = new ResponseBuilder(serializer, response);
 
         try {
             UserModel user = AuthorizationService.authorize(request.headers("Authorization"));
@@ -27,15 +25,15 @@ public class JoinGameHandler implements Route {
 
             var service = new GameService();
             service.joinGame(joinRequest.gameID(), user.username(), joinRequest.playerColor());
-            ResponseUtil.prepareResponse(new BasicResponse(), 200, serializer, response);
-        } catch(UnauthorizedException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse("Error: " + exc.getMessage()), 401, serializer, response);
+            responseBuilder.prepareSuccessResponse(new BasicResponse());
         } catch(InvalidRequestException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse("Error: " + exc.getMessage()), 400, serializer, response);
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 400);
+        } catch(UnauthorizedException exc) {
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 401);
         } catch(DataAccessException | ValidationException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse("Error: " + exc.getMessage()), 403, serializer, response);
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 403);
         } catch(RuntimeException exc) {
-            ResponseUtil.prepareResponse(new BasicResponse("Error: " + exc.getMessage()), 500, serializer, response);
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
 
         return response.body();
