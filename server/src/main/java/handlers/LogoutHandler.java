@@ -1,9 +1,9 @@
 package handlers;
 
+import handlers.responsebuilder.ResponseBuilder;
 import responses.BasicResponse;
 import serialize.ObjectSerializer;
 import service.AuthorizationService;
-import service.ResponseBuilder;
 import service.UnauthorizedException;
 import service.UserService;
 import spark.Request;

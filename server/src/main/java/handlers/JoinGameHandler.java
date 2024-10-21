@@ -1,6 +1,7 @@
 package handlers;
 
 import dataaccess.DataAccessException;
+import handlers.responsebuilder.ResponseBuilder;
 import models.UserModel;
 import requests.InvalidRequestException;
 import requests.JoinGameRequest;

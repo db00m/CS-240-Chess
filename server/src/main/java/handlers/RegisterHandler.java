@@ -1,11 +1,11 @@
 package handlers;
 
+import handlers.responsebuilder.ResponseBuilder;
 import requests.InvalidRequestException;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import responses.LoginResponse;
 import serialize.ObjectSerializer;
-import service.ResponseBuilder;
 import service.UserService;
 import service.ValidationException;
 import spark.*;

@@ -1,12 +1,12 @@
 package handlers;
 
+import handlers.responsebuilder.ResponseBuilder;
 import requests.CreateGameRequest;
 import requests.InvalidRequestException;
 import responses.CreateGameResponse;
 import serialize.ObjectSerializer;
 import service.AuthorizationService;
 import service.GameService;
-import service.ResponseBuilder;
 import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;

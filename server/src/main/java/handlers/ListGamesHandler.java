@@ -1,11 +1,11 @@
 package handlers;
 
+import handlers.responsebuilder.ResponseBuilder;
 import models.ChessGameModel;
 import responses.GameListResponse;
 import serialize.ObjectSerializer;
 import service.AuthorizationService;
 import service.GameService;
-import service.ResponseBuilder;
 import service.UnauthorizedException;
 import spark.Request;
 import spark.Response;

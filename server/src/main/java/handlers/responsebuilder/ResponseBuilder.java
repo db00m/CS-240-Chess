@@ -1,4 +1,4 @@
-package service;
+package handlers.responsebuilder;
 
 import responses.BasicResponse;
 import serialize.ObjectSerializer;
