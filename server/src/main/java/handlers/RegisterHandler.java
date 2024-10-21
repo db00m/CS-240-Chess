@@ -5,9 +5,9 @@ import requests.LoginRequest;
 import requests.RegisterRequest;
 import responses.LoginResponse;
 import serialize.ObjectSerializer;
-import services.ResponseBuilder;
-import services.UserService;
-import services.ValidationException;
+import service.ResponseBuilder;
+import service.UserService;
+import service.ValidationException;
 import spark.*;
 
 import java.util.UUID;

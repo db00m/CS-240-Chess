@@ -1,4 +1,4 @@
-package services;
+package service;
 
 import dataaccess.memorydao.MemoryAuthTokenDAO;
 import dataaccess.memorydao.MemoryChessGameDAO;

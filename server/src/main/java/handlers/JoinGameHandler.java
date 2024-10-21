@@ -6,7 +6,7 @@ import requests.InvalidRequestException;
 import requests.JoinGameRequest;
 import responses.BasicResponse;
 import serialize.ObjectSerializer;
-import services.*;
+import service.*;
 import spark.Request;
 import spark.Response;
 import spark.Route;

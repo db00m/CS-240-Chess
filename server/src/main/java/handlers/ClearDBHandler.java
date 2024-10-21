@@ -2,8 +2,8 @@ package handlers;
 
 import responses.BasicResponse;
 import serialize.ObjectSerializer;
-import services.DBService;
-import services.ResponseBuilder;
+import service.DBService;
+import service.ResponseBuilder;
 import spark.Request;
 import spark.Response;
 import spark.Route;
