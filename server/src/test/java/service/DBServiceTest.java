@@ -25,6 +25,8 @@ class DBServiceTest {
     static ChessGameModel game = new ChessGameModel(1, "testGame");
     static UUID token = UUID.randomUUID();
 
+    static DBService service = new DBService();
+
     @BeforeAll
     public static void setup() {
         userDAO.add(user);
@@ -37,5 +39,11 @@ class DBServiceTest {
         Assertions.assertEquals(userDAO.getUserByUsername("username"), user);
         Assertions.assertEquals(gameDAO.getById(1), game);
         Assertions.assertEquals(authDAO.getUserByToken(token), user);
+
+        service.clearDB();
+
+        Assertions.assertNull(userDAO.getUserByUsername("username"));
+        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.getById(1));
+        Assertions.assertNull(authDAO.getUserByToken(token));
     }
 }
