@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Objects;
+
 public class ChessGameModel {
     private final int gameID;
     private final String gameName;
@@ -40,5 +42,22 @@ public class ChessGameModel {
 
     public String getBlackUsername() {
         return blackUsername;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGameModel that = (ChessGameModel) o;
+        return gameID == that.gameID && Objects.equals(gameName, that.gameName) && Objects.equals(whiteUsername, that.whiteUsername) && Objects.equals(blackUsername, that.blackUsername);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameID, gameName, whiteUsername, blackUsername);
     }
 }

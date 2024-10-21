@@ -3,7 +3,7 @@ package dataaccess;
 import models.UserModel;
 
 public interface UserDAO {
-    void saveUser(UserModel user);
+    void add(UserModel user);
     UserModel getUserByUsername(String username);
     void clearTable();
 }

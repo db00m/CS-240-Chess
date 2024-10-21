@@ -20,7 +20,7 @@ public class UserService {
         UserModel existingUser = userDAO.getUserByUsername(request.username());
 
         if (existingUser == null) {
-            userDAO.saveUser(new UserModel(request.username(), request.password(), request.email()));
+            userDAO.add(new UserModel(request.username(), request.password(), request.email()));
         } else {
             throw new ValidationException("Username already taken");
         }
@@ -35,7 +35,7 @@ public class UserService {
 
         UUID authToken = UUID.randomUUID();
 
-        authTokenDAO.addAuth(authToken, user);
+        authTokenDAO.add(authToken, user);
 
         return authToken;
     }

@@ -11,7 +11,7 @@ public class MemoryUserDAO implements UserDAO {
     private static final Map<String, UserModel> usersTable = new HashMap<>();
 
     @Override
-    public void saveUser(UserModel user) {
+    public void add(UserModel user) {
         usersTable.put(user.username(), user);
     }
 

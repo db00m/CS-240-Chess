@@ -12,7 +12,7 @@ public class MemoryAuthTokenDAO implements AuthTokenDAO {
     private static final Map<UUID, UserModel> authTokens = new HashMap<>();
 
     @Override
-    public void addAuth(UUID token, UserModel user) {
+    public void add(UUID token, UserModel user) {
         authTokens.put(token, user);
     }
 
