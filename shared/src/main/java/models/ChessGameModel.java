@@ -53,11 +53,11 @@ public class ChessGameModel {
             return false;
         }
         ChessGameModel that = (ChessGameModel) o;
-        return gameID == that.gameID && Objects.equals(gameName, that.gameName) && Objects.equals(whiteUsername, that.whiteUsername) && Objects.equals(blackUsername, that.blackUsername);
+        return gameID == that.gameID && Objects.equals(gameName, that.gameName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(gameID, gameName, whiteUsername, blackUsername);
+        return Objects.hash(gameID, gameName);
     }
 }
