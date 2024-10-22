@@ -35,7 +35,7 @@ class DBServiceTest {
     }
 
     @Test
-    public void standardClear() throws DataAccessException {
+    public void clear() throws DataAccessException {
         Assertions.assertEquals(userDAO.getUserByUsername("username"), user);
         Assertions.assertEquals(gameDAO.getById(1), game);
         Assertions.assertEquals(authDAO.getUserByToken(token), user);

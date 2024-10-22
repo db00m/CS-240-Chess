@@ -49,7 +49,9 @@ class UserServiceTest {
 
         LoginRequest validRequest = new LoginRequest("username", "password");
         UUID token = service.loginUser(validRequest);
+        UUID wrongToken = UUID.randomUUID();
 
         assertDoesNotThrow(() -> service.logoutUser(token));
+        assertThrows(UnauthorizedException.class, () -> service.logoutUser(wrongToken));
     }
 }

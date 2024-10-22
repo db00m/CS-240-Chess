@@ -26,7 +26,7 @@ class GameServiceTest {
     void createGame() {
         dao.add("existing");
 
-        Assertions.assertEquals(service.createGame("new"), 2);
+        assertEquals(service.createGame("new"), 2);
     }
 
     @Test
@@ -34,7 +34,7 @@ class GameServiceTest {
         dao.add("existing");
 
         ChessGameModel[] expectedGameList = { existingGame };
-        Assertions.assertArrayEquals(service.listGames().toArray(), expectedGameList);
+        assertArrayEquals(service.listGames().toArray(), expectedGameList);
     }
 
     @Test
@@ -46,7 +46,12 @@ class GameServiceTest {
 
         ChessGameModel game = dao.getById(1);
 
-        Assertions.assertEquals("blackPlayer", game.getBlackUsername());
-        Assertions.assertEquals("whitePlayer", game.getWhiteUsername());
+        assertEquals("blackPlayer", game.getBlackUsername());
+        assertEquals("whitePlayer", game.getWhiteUsername());
+
+        assertThrows(ValidationException.class,
+                () -> service.joinGame(1, "blackPlayer", ChessGame.TeamColor.BLACK));
+        assertThrows(ValidationException.class,
+                () -> service.joinGame(1, "whitePlayer", ChessGame.TeamColor.WHITE));
     }
 }
