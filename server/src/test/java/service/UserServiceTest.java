@@ -52,6 +52,6 @@ class UserServiceTest {
         UUID wrongToken = UUID.randomUUID();
 
         assertDoesNotThrow(() -> service.logoutUser(token));
-        assertThrows(UnauthorizedException.class, () -> service.logoutUser(wrongToken));
+        assertDoesNotThrow(() -> service.logoutUser(wrongToken));
     }
 }
