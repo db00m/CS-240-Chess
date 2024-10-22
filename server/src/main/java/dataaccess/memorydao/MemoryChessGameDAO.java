@@ -10,19 +10,19 @@ import java.util.Map;
 
 public class MemoryChessGameDAO implements ChessGameDAO {
 
-    private static final Map<Integer, ChessGameModel> gamesTable = new HashMap<>();
+    private static final Map<Integer, ChessGameModel> GAMES_TABLE = new HashMap<>();
     private static int lastID = 0;
 
     @Override
     public int add(String gameName) {
         lastID++;
-        gamesTable.put(lastID, new ChessGameModel(lastID, gameName));
+        GAMES_TABLE.put(lastID, new ChessGameModel(lastID, gameName));
         return lastID;
     }
 
     @Override
     public ChessGameModel getById(int id) throws DataAccessException {
-        ChessGameModel game = gamesTable.getOrDefault(id, null);
+        ChessGameModel game = GAMES_TABLE.getOrDefault(id, null);
         if (game == null) {
             throw new DataAccessException("Game does not exist");
         }
@@ -32,11 +32,11 @@ public class MemoryChessGameDAO implements ChessGameDAO {
 
     @Override
     public Collection<ChessGameModel> getAll() {
-        return gamesTable.values();
+        return GAMES_TABLE.values();
     }
 
     @Override
     public void clear() {
-        gamesTable.clear();
+        GAMES_TABLE.clear();
     }
 }

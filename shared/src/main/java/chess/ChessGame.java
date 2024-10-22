@@ -126,11 +126,7 @@ public class ChessGame {
 
         if (rook != null && !rook.hasMoved()) {
             for (int i = 2; i < 5; i++) {
-                var testPosition = new ChessPosition(startingPosition.row(), i);
-                ChessPiece blockingPiece = board.getPiece(testPosition);
-                if (blockingPiece == null) {
-                    clearedSpaces.add(testPosition);
-                }
+                checkSpace(startingPosition, i, clearedSpaces);
             }
 
             if (clearedSpaces.size() == 3 && Collections.disjoint(enemyEndPositions, clearedSpaces)) {
@@ -143,11 +139,7 @@ public class ChessGame {
         clearedSpaces.clear();
         if (rook != null && !rook.hasMoved()) {
             for (int i = 7; i > 5; i--) {
-                var testPosition = new ChessPosition(startingPosition.row(), i);
-                ChessPiece blockingPiece = board.getPiece(testPosition);
-                if (blockingPiece == null) {
-                    clearedSpaces.add(testPosition);
-                }
+                checkSpace(startingPosition, i, clearedSpaces);
             }
 
             if (clearedSpaces.size() == 2 && Collections.disjoint(enemyEndPositions, clearedSpaces)) {
@@ -157,6 +149,14 @@ public class ChessGame {
         }
 
         return castleMoves;
+    }
+
+    private void checkSpace(ChessPosition startingPosition, int i, Set<ChessPosition> clearedSpaces) {
+        var testPosition = new ChessPosition(startingPosition.row(), i);
+        ChessPiece blockingPiece = board.getPiece(testPosition);
+        if (blockingPiece == null) {
+            clearedSpaces.add(testPosition);
+        }
     }
 
     /**
@@ -170,7 +170,9 @@ public class ChessGame {
 
         if (pieceToMove == null
                 || pieceToMove.getTeamColor() != teamTurn
-                || (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move) && !isEnPassant(move) && !isCastle(move))) {
+                || (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move)
+                && !isEnPassant(move)
+                && !isCastle(move))) {
             throw new InvalidMoveException();
         }
 

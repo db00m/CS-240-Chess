@@ -9,25 +9,25 @@ import java.util.UUID;
 
 public class MemoryAuthTokenDAO implements AuthTokenDAO {
 
-    private static final Map<UUID, UserModel> authTokens = new HashMap<>();
+    private static final Map<UUID, UserModel> AUTH_TOKENS = new HashMap<>();
 
     @Override
     public void add(UUID token, UserModel user) {
-        authTokens.put(token, user);
+        AUTH_TOKENS.put(token, user);
     }
 
     @Override
     public UserModel getUserByToken(UUID authToken) {
-        return authTokens.get(authToken);
+        return AUTH_TOKENS.get(authToken);
     }
 
     @Override
     public void delete(UUID authToken) {
-        authTokens.remove(authToken);
+        AUTH_TOKENS.remove(authToken);
     }
 
     @Override
     public void clearTokens() {
-        authTokens.clear();
+        AUTH_TOKENS.clear();
     }
 }

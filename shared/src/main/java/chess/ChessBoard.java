@@ -120,7 +120,9 @@ public class ChessBoard implements Cloneable {
     public void movePiece(ChessMove move) {
         ChessPiece pieceToMove = getPiece(move.startPosition());
 
-        if (pieceToMove == null) { return; }
+        if (pieceToMove == null) {
+            return;
+        }
 
         if (move.promotionPiece() != null) {
             pieceToMove = new ChessPiece(pieceToMove.getTeamColor(), move.promotionPiece());
@@ -143,7 +145,8 @@ public class ChessBoard implements Cloneable {
 
     public void handleCastle(ChessMove move) {
         boolean isQueenSide = move.startPosition().col() > move.endPosition().col();
-        ChessPosition rookPosition = isQueenSide ? new ChessPosition(move.startPosition().row(), 1) : new ChessPosition(move.startPosition().row(), 8);
+        ChessPosition rookPosition = isQueenSide ? new ChessPosition(move.startPosition().row(), 1) :
+                new ChessPosition(move.startPosition().row(), 8);
         ChessPiece rook = getPiece(rookPosition);
         ChessPiece king = getPiece(move.startPosition());
 
@@ -180,8 +183,12 @@ public class ChessBoard implements Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessBoard that = (ChessBoard) o;
         return Objects.deepEquals(boardMatrix, that.boardMatrix);
     }

@@ -9,18 +9,18 @@ import java.util.UUID;
 
 class AuthorizationServiceTest {
 
-    private static final AuthTokenDAO dao = new MemoryAuthTokenDAO();
-    private static final UserModel loggedInUser = new UserModel("username", "password", "fake@email.com");
-    private static final UUID authToken = UUID.randomUUID();
+    private static final AuthTokenDAO DAO = new MemoryAuthTokenDAO();
+    private static final UserModel LOGGED_IN_USER = new UserModel("username", "password", "fake@email.com");
+    private static final UUID AUTH_TOKEN = UUID.randomUUID();
 
     @BeforeAll
     public static void setup() {
-        dao.add(authToken, loggedInUser);
+        DAO.add(AUTH_TOKEN, LOGGED_IN_USER);
     }
 
     @Test
     public void standardAuthorization() {
-        Assertions.assertNotNull(AuthorizationService.authorize(authToken.toString()));
+        Assertions.assertNotNull(AuthorizationService.authorize(AUTH_TOKEN.toString()));
     }
 
     @Test
