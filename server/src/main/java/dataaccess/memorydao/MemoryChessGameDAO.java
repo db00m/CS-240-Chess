@@ -38,5 +38,6 @@ public class MemoryChessGameDAO implements ChessGameDAO {
     @Override
     public void clear() {
         GAMES_TABLE.clear();
+        lastID = 0;
     }
 }

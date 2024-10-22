@@ -17,24 +17,30 @@ class GameServiceTest {
     public static ChessGameModel existingGame = new ChessGameModel(1, "existing");
     public static ChessGameModel newGame = new ChessGameModel(2, "new");
 
-    @BeforeAll
-    static void setup() {
-        dao.add("existing");
+    @BeforeEach
+    void setup() {
+        dao.clear();
     }
 
     @Test
     void createGame() {
+        dao.add("existing");
+
         Assertions.assertEquals(service.createGame("new"), 2);
     }
 
     @Test
     void listGames() {
+        dao.add("existing");
+
         ChessGameModel[] expectedGameList = { existingGame };
         Assertions.assertArrayEquals(service.listGames().toArray(), expectedGameList);
     }
 
     @Test
     void joinGame() throws DataAccessException {
+        dao.add("existing");
+
         service.joinGame(1, "blackPlayer", ChessGame.TeamColor.BLACK);
         service.joinGame(1, "whitePlayer", ChessGame.TeamColor.WHITE);
 
