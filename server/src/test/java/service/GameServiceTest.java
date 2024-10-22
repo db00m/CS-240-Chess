@@ -7,6 +7,8 @@ import dataaccess.memorydao.MemoryChessGameDAO;
 import models.ChessGameModel;
 import org.junit.jupiter.api.*;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameServiceTest {
@@ -30,11 +32,24 @@ class GameServiceTest {
     }
 
     @Test
+    void duplicateCreate() {
+        dao.add("existing");
+
+        assertEquals(service.createGame("existing"), 2);
+
+    }
+
+    @Test
     void listGames() {
         dao.add("existing");
 
         ChessGameModel[] expectedGameList = { existingGame };
         assertArrayEquals(service.listGames().toArray(), expectedGameList);
+    }
+
+    @Test
+    void emptyListGames() {
+        assertArrayEquals(service.listGames().toArray(), Collections.emptyList().toArray());
     }
 
     @Test
@@ -48,6 +63,13 @@ class GameServiceTest {
 
         assertEquals("blackPlayer", game.getBlackUsername());
         assertEquals("whitePlayer", game.getWhiteUsername());
+    }
+
+    @Test
+    void failJoinGame() throws DataAccessException {
+        dao.add("existing");
+        dao.getById(1).setBlackUsername("blackPlayer");
+        dao.getById(1).setWhiteUsername("whitePlayer");
 
         assertThrows(ValidationException.class,
                 () -> service.joinGame(1, "blackPlayer", ChessGame.TeamColor.BLACK));

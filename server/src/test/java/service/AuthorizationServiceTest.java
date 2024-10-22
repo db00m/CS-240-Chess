@@ -19,14 +19,23 @@ class AuthorizationServiceTest {
     }
 
     @Test
-    public void authorize() {
+    public void standardAuthorize() {
         Assertions.assertNotNull(AuthorizationService.authorize(AUTH_TOKEN.toString()));
+    }
+
+
+    @Test
+    public void invalidAuthorize() {
         String invalidAuthToken = "asdf";
-        String unauthorizedToken = UUID.randomUUID().toString();
 
         Assertions.assertThrows(UnauthorizedException.class, () -> {
             AuthorizationService.authorize(invalidAuthToken);
         });
+    }
+
+    @Test
+    public void unauthorizedAuthorize() {
+        String unauthorizedToken = UUID.randomUUID().toString();
 
         Assertions.assertThrows(UnauthorizedException.class, () -> {
             AuthorizationService.authorize(unauthorizedToken);

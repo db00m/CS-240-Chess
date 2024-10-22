@@ -29,29 +29,46 @@ class UserServiceTest {
         service.registerUser(request);
 
         assertEquals(user, dao.getUserByUsername("username"));
+    }
+
+    @Test
+    void invalidRegister() {
+        dao.add(user);
+        RegisterRequest request = new RegisterRequest("username", "password", "fake@email.com");
+
         assertThrows(ValidationException.class, () -> service.registerUser(request));
     }
 
     @Test
-    void loginUser() {
+    void successLoginUser() {
         dao.add(user);
 
         LoginRequest validRequest = new LoginRequest("username", "password");
-        LoginRequest invalidRequest = new LoginRequest("username", "wrong");
 
         assertNotNull(service.loginUser(validRequest));
+    }
+
+    @Test
+    void failLoginUser() {
+        LoginRequest invalidRequest = new LoginRequest("username", "wrong");
+
         assertThrows(ValidationException.class, () -> service.loginUser(invalidRequest));
     }
 
     @Test
-    void logoutUser() {
+    void standardLogout() {
         dao.add(user);
 
         LoginRequest validRequest = new LoginRequest("username", "password");
         UUID token = service.loginUser(validRequest);
-        UUID wrongToken = UUID.randomUUID();
+
 
         assertDoesNotThrow(() -> service.logoutUser(token));
+    }
+
+    @Test
+    void logoutWithWrongToken() {
+        UUID wrongToken = UUID.randomUUID();
         assertDoesNotThrow(() -> service.logoutUser(wrongToken));
     }
 }

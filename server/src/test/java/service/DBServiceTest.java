@@ -35,7 +35,7 @@ class DBServiceTest {
     }
 
     @Test
-    public void clear() throws DataAccessException {
+    public void standardClear() throws DataAccessException {
         Assertions.assertEquals(userDAO.getUserByUsername("username"), user);
         Assertions.assertEquals(gameDAO.getById(1), game);
         Assertions.assertEquals(authDAO.getUserByToken(token), user);
@@ -45,5 +45,10 @@ class DBServiceTest {
         Assertions.assertNull(userDAO.getUserByUsername("username"));
         Assertions.assertThrows(DataAccessException.class, () -> gameDAO.getById(1));
         Assertions.assertNull(authDAO.getUserByToken(token));
+    }
+
+    @Test
+    public void emptyClear() {
+        assertDoesNotThrow(() -> service.clearDB());
     }
 }
