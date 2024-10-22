@@ -114,7 +114,10 @@ public class ChessGame {
     private Collection<ChessMove> possibleCastleMoves(ChessPosition startingPosition) {
         ChessPiece king = board.getPiece(startingPosition);
 
-        if (king == null || king.getPieceType() != ChessPiece.PieceType.KING || king.hasMoved() || !king.startingPosition(0).equals(startingPosition)) {
+        if (king == null ||
+                king.getPieceType() != ChessPiece.PieceType.KING ||
+                king.hasMoved() ||
+                !king.startingPosition(0).equals(startingPosition)) {
             return Collections.emptySet();
         }
 

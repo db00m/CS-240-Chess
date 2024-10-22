@@ -36,7 +36,11 @@ public class BishopMoveCalculator {
         return moves;
     }
 
-    static boolean pieceShouldAdvance(ChessPosition newPosition, ChessBoard board, Set<ChessMove> moves, ChessPosition myPosition, ChessGame.TeamColor teamColor) {
+    static boolean pieceShouldAdvance(ChessPosition newPosition,
+                                      ChessBoard board,
+                                      Set<ChessMove> moves,
+                                      ChessPosition myPosition,
+                                      ChessGame.TeamColor teamColor) {
         if (newPosition.isOffBoard()) {
             return false;
         }

@@ -23,20 +23,10 @@ public class KingMoveCalculator {
             for (int j = -1; j < 2; j++) {
                 var newPosition = new ChessPosition(myPosition.row() + i, myPosition.col() + j);
 
-                validateNewPosition(newPosition);
+                KnightMoveCalculator.validateNewPosition(newPosition, board, teamColor, moves, myPosition);
             }
         }
 
         return moves;
-    }
-
-    private void validateNewPosition(ChessPosition newPosition) {
-        if (!newPosition.isOffBoard()) {
-            ChessPiece piece = board.getPiece(newPosition);
-
-            if (piece == null || piece.getTeamColor() != teamColor) {
-                moves.add(new ChessMove(myPosition, newPosition));
-            }
-        }
     }
 }

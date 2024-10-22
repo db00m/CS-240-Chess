@@ -24,19 +24,23 @@ public class KnightMoveCalculator {
             for (int j = -1; j < 2; j += 2) {
                 var newPosition = new ChessPosition(myPosition.row() + i, myPosition.col() + j);
 
-                validateNewPosition(newPosition);
+                validateNewPosition(newPosition, board, teamColor, moves, myPosition);
             }
             for (int j = -1; j < 2; j += 2) {
                 var newPosition = new ChessPosition(myPosition.row() + j, myPosition.col() + i);
 
-                validateNewPosition(newPosition);
+                validateNewPosition(newPosition, board, teamColor, moves, myPosition);
             }
         }
 
         return moves;
     }
 
-    private void validateNewPosition(ChessPosition newPosition) {
+    public static void validateNewPosition(ChessPosition newPosition,
+                                            ChessBoard board,
+                                            ChessGame.TeamColor teamColor,
+                                            Collection<ChessMove> moves,
+                                            ChessPosition myPosition) {
         if (!newPosition.isOffBoard()) {
             ChessPiece piece = board.getPiece(newPosition);
 
