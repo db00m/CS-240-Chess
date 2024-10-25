@@ -34,7 +34,8 @@ public class CreateGameHandler implements Route {
         } catch(InvalidRequestException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 400);
         } catch(RuntimeException exc) {
-            responseBuilder.prepareErrorResponse(exc.getMessage(), 500);        }
+            responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
+        }
 
         return response.body();
     }
