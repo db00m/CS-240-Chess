@@ -13,7 +13,7 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public void add(UserModel user) {
-        USERS_TABLE.put(user.getUsername(), user);
+        USERS_TABLE.put(user.username(), user);
     }
 
     @Override
@@ -22,7 +22,7 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     public void validatePassword(UserModel user, String password) throws ValidationException {
-        if (user == null || !Objects.equals(user.getPassword(), password)) {
+        if (user == null || !Objects.equals(user.password(), password)) {
             throw new ValidationException("Invalid login credentials");
         }
     }

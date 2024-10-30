@@ -24,15 +24,16 @@ public class SQLAuthTokenDAO implements AuthTokenDAO {
 
     @Override
     public void add(UUID token, UserModel user) {
-//        var statement = "INSERT INTO auth_tokens VALUES (?, ?)";
-//        try {
-//            try (var prepareStatement = conn.prepareStatement(statement)) {
-//                prepareStatement.setString(1, token.toString());
-//                prepareStatement.setInt(2, 4);
-//            }
-//        } catch(SQLException exc) {
-//            throw new RuntimeException(exc.getMessage());
-//        }
+        var statement = "INSERT INTO auth_tokens VALUES (?, ?)";
+        try {
+            try (var prepareStatement = conn.prepareStatement(statement)) {
+                prepareStatement.setString(1, token.toString());
+                prepareStatement.setInt(2, user.ID());
+                prepareStatement.executeUpdate();
+            }
+        } catch(SQLException exc) {
+            throw new RuntimeException(exc.getMessage());
+        }
     }
 
     @Override
@@ -48,12 +49,16 @@ public class SQLAuthTokenDAO implements AuthTokenDAO {
             try (var prepareStatement = conn.prepareStatement(statement)) {
                 prepareStatement.setString(1, authToken.toString());
                 try (var rs = prepareStatement.executeQuery()) {
-                    return new UserModel(rs.getString("username"), null, rs.getString("email"));
+                    if (rs.next()) {
+                        return new UserModel(rs.getString("username"), null, rs.getString("email"));
+                    }
                 }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        return null;
     }
 
     @Override
@@ -63,6 +68,7 @@ public class SQLAuthTokenDAO implements AuthTokenDAO {
         try {
             try (var prepareStatement = conn.prepareStatement(statement)) {
                 prepareStatement.setString(1, authToken.toString());
+                prepareStatement.executeUpdate();
             }
         } catch(SQLException exc) {
             throw new RuntimeException(exc.getMessage());
@@ -71,7 +77,7 @@ public class SQLAuthTokenDAO implements AuthTokenDAO {
 
     @Override
     public void clearTokens() {
-        var statement = "TRUNCATE TABLE auth_tokens";
+        var statement = "DELETE FROM auth_tokens";
 
         try {
             try (var preparedStatement = conn.prepareStatement(statement)) {

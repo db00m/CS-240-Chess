@@ -21,12 +21,6 @@ public class SQLUserDAO implements UserDAO {
             );
             """;
 
-    public static void main(String [] args) throws DataAccessException {
-        var dao = new SQLUserDAO();
-
-        dao.clearTable();
-    }
-
     public SQLUserDAO() throws DataAccessException {
     }
 
@@ -35,9 +29,9 @@ public class SQLUserDAO implements UserDAO {
         var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
 
         try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
-            preparedStatement.setString(3, user.getEmail());
+            preparedStatement.setString(1, user.username());
+            preparedStatement.setString(2, BCrypt.hashpw(user.password(), BCrypt.gensalt()));
+            preparedStatement.setString(3, user.email());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -46,12 +40,12 @@ public class SQLUserDAO implements UserDAO {
 
     @Override
     public UserModel getUserByUsername(String username) {
-        var query = "SELECT username, password, email FROM users WHERE username = ?";
+        var query = "SELECT id, username, password, email FROM users WHERE username = ?";
         try(var preparedQuery = conn.prepareStatement(query)) {
             preparedQuery.setString(1, username);
             try(var rs = preparedQuery.executeQuery()) {
                 if (rs.next()) {
-                    return new UserModel(rs.getString("username"), rs.getString("password"), rs.getString("email"));
+                    return new UserModel(rs.getInt("id"), rs.getString("username"), rs.getString("password"), rs.getString("email"));
                 }
             }
         } catch (SQLException e) {
@@ -63,7 +57,7 @@ public class SQLUserDAO implements UserDAO {
 
     @Override
     public void validatePassword(UserModel user, String password) {
-        if (user == null || !BCrypt.checkpw(password, user.getPassword())){
+        if (user == null || !BCrypt.checkpw(password, user.password())){
             throw new ValidationException("Invalid login credentials");
         }
     }
