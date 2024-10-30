@@ -1,7 +1,7 @@
 package service;
 
 import dataaccess.UserDAO;
-import dataaccess.memorydao.MemoryUserDAO;
+import dataaccess.MemoryUserDAO;
 import models.UserModel;
 import org.junit.jupiter.api.*;
 import requests.LoginRequest;

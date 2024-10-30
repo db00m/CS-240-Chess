@@ -1,7 +1,7 @@
 package service;
 
 import dataaccess.AuthTokenDAO;
-import dataaccess.memorydao.MemoryAuthTokenDAO;
+import dataaccess.MemoryAuthTokenDAO;
 import models.UserModel;
 import org.junit.jupiter.api.*;
 

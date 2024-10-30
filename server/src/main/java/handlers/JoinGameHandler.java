@@ -25,7 +25,7 @@ public class JoinGameHandler implements Route {
             joinRequest.validate();
 
             var service = new GameService();
-            service.joinGame(joinRequest.gameID(), user.username(), joinRequest.playerColor());
+            service.joinGame(joinRequest.gameID(), user.getUsername(), joinRequest.playerColor());
             responseBuilder.prepareSuccessResponse(new BasicResponse());
         } catch(InvalidRequestException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 400);

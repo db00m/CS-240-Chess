@@ -1,8 +1,8 @@
 package service;
 
 import dataaccess.AuthTokenDAO;
-import dataaccess.memorydao.MemoryAuthTokenDAO;
-import dataaccess.memorydao.MemoryUserDAO;
+import dataaccess.MemoryAuthTokenDAO;
+import dataaccess.MemoryUserDAO;
 import dataaccess.UserDAO;
 import models.UserModel;
 import requests.LoginRequest;
@@ -28,20 +28,15 @@ public class UserService {
 
     public UUID loginUser(LoginRequest request) throws ValidationException {
         UserModel user =  userDAO.getUserByUsername(request.username());
-
-        if (user == null || !Objects.equals(user.password(), request.password())) {
-            throw new ValidationException("Invalid login credentials");
-        }
+        userDAO.validatePassword(user, request.password());
 
         UUID authToken = UUID.randomUUID();
-
         authTokenDAO.add(authToken, user);
 
         return authToken;
     }
 
     public void logoutUser(UUID authToken) throws UnauthorizedException {
-
         authTokenDAO.delete(authToken);
     }
 }

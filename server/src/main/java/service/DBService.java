@@ -1,8 +1,8 @@
 package service;
 
-import dataaccess.memorydao.MemoryAuthTokenDAO;
-import dataaccess.memorydao.MemoryChessGameDAO;
-import dataaccess.memorydao.MemoryUserDAO;
+import dataaccess.MemoryAuthTokenDAO;
+import dataaccess.MemoryChessGameDAO;
+import dataaccess.MemoryUserDAO;
 
 public class DBService {
     public void clearDB() {

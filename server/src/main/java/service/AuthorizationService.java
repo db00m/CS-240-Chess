@@ -1,6 +1,6 @@
 package service;
 
-import dataaccess.memorydao.MemoryAuthTokenDAO;
+import dataaccess.MemoryAuthTokenDAO;
 import models.UserModel;
 
 import java.util.UUID;

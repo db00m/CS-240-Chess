@@ -8,6 +8,11 @@ public class DatabaseManager {
     private static final String USER;
     private static final String PASSWORD;
     private static final String CONNECTION_URL;
+    private static final String[] CREATE_TABLE_STATEMENTS = {
+            SQLUserDAO.CREATE_TABLE,
+            SQLAuthTokenDAO.CREATE_TABLE,
+            SQLChessGameDAO.CREATE_TABLE
+    };
 
     /*
      * Load the database information for the db.properties file.
@@ -38,12 +43,22 @@ public class DatabaseManager {
      */
     public static void createDatabase() throws DataAccessException {
         try {
-            var statement = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
+            String[] initialStatements = {
+                    "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME,
+                    "USE " + DATABASE_NAME
+            };
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.executeUpdate();
+
+            for (String statement : initialStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
             }
-            // TODO: create tables here
+            for (String createTable : CREATE_TABLE_STATEMENTS) {
+                try (var tableStatement = conn.prepareStatement(createTable)) {
+                    tableStatement.executeUpdate();
+                }
+            }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
