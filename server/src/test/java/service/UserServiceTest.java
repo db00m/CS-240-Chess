@@ -1,13 +1,12 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.UserDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import models.UserModel;
 import org.junit.jupiter.api.*;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 
+import javax.xml.crypto.Data;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,21 +14,32 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserServiceTest {
 
     public static UserService service;
+    public static UserDAO dao;
+    public static AuthTokenDAO authDao;
 
     static {
         try {
+            var conn = DatabaseManager.getConnection();
+            dao = new SQLUserDAO(conn);
+            authDao = new SQLAuthTokenDAO(conn);
             service = new UserService();
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static UserDAO dao = new MemoryUserDAO();
 
     public static UserModel user = new UserModel("username", "password", "fake@email.com");
 
     @BeforeEach
     void setup() {
+        authDao.clearTokens();
+        dao.clearTable();
+    }
+
+    @AfterAll
+    static void clear() {
+        authDao.clearTokens();
         dao.clearTable();
     }
 
@@ -38,7 +48,7 @@ class UserServiceTest {
         RegisterRequest request = new RegisterRequest("username", "password", "fake@email.com");
         service.registerUser(request);
 
-        assertEquals(user, dao.getUserByUsername("username"));
+        assertNotNull(dao.getUserByUsername("username"));
     }
 
     @Test

@@ -1,12 +1,6 @@
 package service;
 
-import dataaccess.AuthTokenDAO;
-import dataaccess.ChessGameDAO;
-import dataaccess.DataAccessException;
-import dataaccess.UserDAO;
-import dataaccess.MemoryAuthTokenDAO;
-import dataaccess.MemoryChessGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import models.ChessGameModel;
 import models.UserModel;
 import org.junit.jupiter.api.*;
@@ -17,12 +11,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DBServiceTest {
 
-    static UserDAO userDAO = new MemoryUserDAO();
-    static ChessGameDAO gameDAO = new MemoryChessGameDAO();
-    static AuthTokenDAO authDAO = new MemoryAuthTokenDAO();
+    static UserDAO userDAO;
+    static ChessGameDAO gameDAO;
+    static AuthTokenDAO authDAO;
+
+    static {
+        try {
+            var conn = DatabaseManager.getConnection();
+            userDAO = new SQLUserDAO(conn);
+            gameDAO = new SQLChessGameDAO(conn);
+            authDAO = new SQLAuthTokenDAO(conn);
+        } catch(DataAccessException exc) {
+            throw new RuntimeException(exc);
+        }
+    }
 
     static UserModel user = new UserModel("username", "password", "fake@email.com");
     static ChessGameModel game = new ChessGameModel(1, "testGame");
+    static int gameId;
     static UUID token = UUID.randomUUID();
 
     static DBService service = new DBService();
@@ -30,15 +36,22 @@ class DBServiceTest {
     @BeforeAll
     public static void setup() throws DataAccessException {
         userDAO.add(user);
-        gameDAO.add("testGame");
-        authDAO.add(token, user);
+        authDAO.add(token, fetchUser());
+        gameId = gameDAO.add("testGame");
+    }
+
+    @AfterAll
+    public static void clear() {
+        authDAO.clearTokens();
+        gameDAO.clear();
+        userDAO.clearTable();
     }
 
     @Test
     public void standardClear() throws DataAccessException {
-        Assertions.assertEquals(userDAO.getUserByUsername("username"), user);
-        Assertions.assertEquals(gameDAO.getById(1), game);
-        Assertions.assertEquals(authDAO.getUserByToken(token), user);
+        Assertions.assertEquals(fetchUser().email(), user.email());
+        Assertions.assertEquals(gameDAO.getById(gameId).getGameName(), game.getGameName());
+        Assertions.assertEquals(authDAO.getUserByToken(token).email(), user.email());
 
         service.clearDB();
 
@@ -50,5 +63,9 @@ class DBServiceTest {
     @Test
     public void emptyClear() {
         assertDoesNotThrow(() -> service.clearDB());
+    }
+
+    private static UserModel fetchUser() {
+        return userDAO.getUserByUsername("username");
     }
 }

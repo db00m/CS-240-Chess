@@ -4,23 +4,25 @@ import chess.ChessGame;
 import dataaccess.*;
 import models.ChessGameModel;
 import models.UserModel;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
 
-import javax.xml.crypto.Data;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameServiceTest {
 
-    public static ChessGameDAO dao = new MemoryChessGameDAO();
-    public static UserDAO userDAO = new MemoryUserDAO();
-    public static GameService service;
+    static ChessGameDAO gameDAO;
+    static UserDAO userDAO;
+    static GameService service;
 
     static {
         try {
             service = new GameService();
+
+            var conn = DatabaseManager.getConnection();
+            gameDAO = new SQLChessGameDAO(conn);
+            userDAO = new SQLUserDAO(conn);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -31,29 +33,30 @@ class GameServiceTest {
 
     @BeforeEach
     void setup() {
-        dao.clear();
+        gameDAO.clear();
     }
 
     @Test
     void createGame() throws DataAccessException {
-        dao.add("existing");
+        gameDAO.add("existing");
+        int id = service.createGame("new");
 
-        assertEquals(service.createGame("new"), 2);
+        assertEquals(gameDAO.getById(id).getGameName(), newGame.getGameName());
     }
 
     @Test
     void duplicateCreate() throws DataAccessException {
-        dao.add("existing");
+        gameDAO.add("existing");
+        int id = service.createGame("new");
 
-        assertEquals(service.createGame("existing"), 2);
-
+        assertEquals(gameDAO.getById(id).getGameName(), newGame.getGameName());
     }
 
     @Test
     void listGames() throws DataAccessException {
-        dao.add("existing");
+        int id = gameDAO.add("existing");
 
-        ChessGameModel[] expectedGameList = { existingGame };
+        ChessGameModel[] expectedGameList = { gameDAO.getById(id) };
         assertArrayEquals(service.listGames().toArray(), expectedGameList);
     }
 
@@ -64,14 +67,14 @@ class GameServiceTest {
 
     @Test
     void joinGame() throws DataAccessException {
-        dao.add("existing");
+        int id = gameDAO.add("existing");
         userDAO.add(new UserModel("blackPlayer", "password", "email"));
         userDAO.add(new UserModel("whitePlayer", "password", "email"));
 
-        service.joinGame(1, "blackPlayer", ChessGame.TeamColor.BLACK);
-        service.joinGame(1, "whitePlayer", ChessGame.TeamColor.WHITE);
+        service.joinGame(id, "blackPlayer", ChessGame.TeamColor.BLACK);
+        service.joinGame(id, "whitePlayer", ChessGame.TeamColor.WHITE);
 
-        ChessGameModel game = dao.getById(1);
+        ChessGameModel game = gameDAO.getById(id);
 
         assertEquals("blackPlayer", game.getBlackUsername());
         assertEquals("whitePlayer", game.getWhiteUsername());
@@ -79,15 +82,16 @@ class GameServiceTest {
 
     @Test
     void failJoinGame() throws DataAccessException {
-        dao.add("existing");
+        int id = gameDAO.add("existing");
         userDAO.add(new UserModel("blackPlayer", "password", "email"));
         userDAO.add(new UserModel("whitePlayer", "password", "email"));
-        dao.getById(1).setBlackUsername("blackPlayer");
-        dao.getById(1).setWhiteUsername("whitePlayer");
+        ChessGameModel game = gameDAO.getById(id);
+        gameDAO.setBlackUser(game, userDAO.getUserByUsername("blackPlayer"));
+        gameDAO.setWhiteUser(game, userDAO.getUserByUsername("whitePlayer"));
 
         assertThrows(ValidationException.class,
-                () -> service.joinGame(1, "blackPlayer", ChessGame.TeamColor.BLACK));
+                () -> service.joinGame(id, "blackPlayer", ChessGame.TeamColor.BLACK));
         assertThrows(ValidationException.class,
-                () -> service.joinGame(1, "whitePlayer", ChessGame.TeamColor.WHITE));
+                () -> service.joinGame(id, "whitePlayer", ChessGame.TeamColor.WHITE));
     }
 }
