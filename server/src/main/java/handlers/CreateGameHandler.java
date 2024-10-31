@@ -1,5 +1,6 @@
 package handlers;
 
+import dataaccess.DataAccessException;
 import handlers.responsebuilder.ResponseBuilder;
 import requests.CreateGameRequest;
 import requests.InvalidRequestException;
@@ -33,7 +34,7 @@ public class CreateGameHandler implements Route {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 401);
         } catch(InvalidRequestException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 400);
-        } catch(RuntimeException exc) {
+        } catch(RuntimeException | DataAccessException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
 

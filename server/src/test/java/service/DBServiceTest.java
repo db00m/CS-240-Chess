@@ -28,7 +28,7 @@ class DBServiceTest {
     static DBService service = new DBService();
 
     @BeforeAll
-    public static void setup() {
+    public static void setup() throws DataAccessException {
         userDAO.add(user);
         gameDAO.add("testGame");
         authDAO.add(token, user);

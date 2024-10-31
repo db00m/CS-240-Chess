@@ -1,6 +1,7 @@
 package dataaccess;
 
 import models.ChessGameModel;
+import models.UserModel;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,6 +27,16 @@ public class MemoryChessGameDAO implements ChessGameDAO {
         }
 
         return game;
+    }
+
+    @Override
+    public void setBlackUser(ChessGameModel game, UserModel user) {
+        game.setBlackUsername(user.username());
+    }
+
+    @Override
+    public void setWhiteUser(ChessGameModel game, UserModel user) {
+        game.setWhiteUsername(user.username());
     }
 
     @Override

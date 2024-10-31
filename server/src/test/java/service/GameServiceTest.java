@@ -1,12 +1,13 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.ChessGameDAO;
-import dataaccess.DataAccessException;
-import dataaccess.MemoryChessGameDAO;
+import dataaccess.*;
 import models.ChessGameModel;
+import models.UserModel;
+import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.*;
 
+import javax.xml.crypto.Data;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameServiceTest {
 
     public static ChessGameDAO dao = new MemoryChessGameDAO();
+    public static UserDAO userDAO = new MemoryUserDAO();
     public static GameService service = new GameService();
 
     public static ChessGameModel existingGame = new ChessGameModel(1, "existing");
@@ -25,14 +27,14 @@ class GameServiceTest {
     }
 
     @Test
-    void createGame() {
+    void createGame() throws DataAccessException {
         dao.add("existing");
 
         assertEquals(service.createGame("new"), 2);
     }
 
     @Test
-    void duplicateCreate() {
+    void duplicateCreate() throws DataAccessException {
         dao.add("existing");
 
         assertEquals(service.createGame("existing"), 2);
@@ -40,7 +42,7 @@ class GameServiceTest {
     }
 
     @Test
-    void listGames() {
+    void listGames() throws DataAccessException {
         dao.add("existing");
 
         ChessGameModel[] expectedGameList = { existingGame };
@@ -55,6 +57,8 @@ class GameServiceTest {
     @Test
     void joinGame() throws DataAccessException {
         dao.add("existing");
+        userDAO.add(new UserModel("blackPlayer", "password", "email"));
+        userDAO.add(new UserModel("whitePlayer", "password", "email"));
 
         service.joinGame(1, "blackPlayer", ChessGame.TeamColor.BLACK);
         service.joinGame(1, "whitePlayer", ChessGame.TeamColor.WHITE);
@@ -68,6 +72,8 @@ class GameServiceTest {
     @Test
     void failJoinGame() throws DataAccessException {
         dao.add("existing");
+        userDAO.add(new UserModel("blackPlayer", "password", "email"));
+        userDAO.add(new UserModel("whitePlayer", "password", "email"));
         dao.getById(1).setBlackUsername("blackPlayer");
         dao.getById(1).setWhiteUsername("whitePlayer");
 

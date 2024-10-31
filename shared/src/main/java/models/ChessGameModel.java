@@ -28,7 +28,7 @@ public class ChessGameModel {
         this.blackUsername = username;
     }
 
-    public int getGameID() {
+    public int getID() {
         return gameID;
     }
 
@@ -59,5 +59,15 @@ public class ChessGameModel {
     @Override
     public int hashCode() {
         return Objects.hash(gameID, gameName);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessGameModel{" +
+               "gameID=" + gameID +
+               ", gameName='" + gameName + '\'' +
+               ", whiteUsername='" + whiteUsername + '\'' +
+               ", blackUsername='" + blackUsername + '\'' +
+               '}';
     }
 }

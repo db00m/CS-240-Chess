@@ -2,6 +2,7 @@ package dataaccess;
 
 import chess.ChessGame;
 import models.ChessGameModel;
+import models.UserModel;
 import serialize.ObjectSerializer;
 
 import java.sql.Connection;
@@ -14,6 +15,7 @@ public class SQLChessGameDAO implements ChessGameDAO {
 
     Connection conn = DatabaseManager.getConnection();
 
+    //language=MySQL
     public static String CREATE_TABLE = """
             CREATE TABLE IF NOT EXISTS chess_games(
                 id INT NOT NULL AUTO_INCREMENT,
@@ -31,8 +33,15 @@ public class SQLChessGameDAO implements ChessGameDAO {
     }
 
     public static void main(String [] args) throws DataAccessException {
-        var dao = new SQLChessGameDAO();
-        dao.add("newGame");
+        var userDAO = new SQLUserDAO();
+        var gameDAO = new SQLChessGameDAO();
+        var white = userDAO.getUserByUsername("white");
+        var black = userDAO.getUserByUsername("black");
+
+        var game = gameDAO.getById(3);
+
+//        gameDAO.setBlackUser(game, black);
+        gameDAO.setWhiteUser(game, white);
     }
 
     @Override
@@ -58,7 +67,57 @@ public class SQLChessGameDAO implements ChessGameDAO {
 
     @Override
     public ChessGameModel getById(int id) throws DataAccessException {
-        return null;
+        var query = """
+                SELECT
+                    chess_games.id,
+                    chess_games.name,
+                    white_user.username as white_username,
+                    black_user.username as black_username
+                FROM
+                    chess_games
+                LEFT JOIN
+                    users white_user ON chess_games.white_user_id = white_user.id
+                LEFT JOIN
+                    users black_user ON chess_games.black_user_id = black_user.id
+                WHERE
+                    chess_games.id = ?
+                """;
+        try (var preparedQuery = conn.prepareStatement(query)) {
+            preparedQuery.setInt(1, id);
+            try (var rs = preparedQuery.executeQuery()) {
+                if(rs.next()) {
+                    return new ChessGameModel(rs.getInt("id"), rs.getString("name"), rs.getString("white_username"), rs.getString("black_username"));
+                }
+            }
+        } catch(SQLException exc) {
+            throw new RuntimeException(exc);
+        }
+
+        throw new DataAccessException("Chess Game not found with provided ID");
+    }
+
+    @Override
+    public void setBlackUser(ChessGameModel game, UserModel user) {
+        var statement = "UPDATE chess_games SET black_user_id = ? WHERE id = ?";
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setInt(1, user.ID());
+            preparedStatement.setInt(2, game.getID());
+            preparedStatement.executeUpdate();
+        } catch (SQLException exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+    @Override
+    public void setWhiteUser(ChessGameModel game, UserModel user) {
+        var statement = "UPDATE chess_games SET white_user_id = ? WHERE id = ?";
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setInt(1, user.ID());
+            preparedStatement.setInt(2, game.getID());
+            preparedStatement.executeUpdate();
+        } catch (SQLException exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
     @Override
