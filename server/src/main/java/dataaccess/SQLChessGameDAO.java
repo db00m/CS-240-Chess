@@ -8,8 +8,7 @@ import serialize.ObjectSerializer;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class SQLChessGameDAO implements ChessGameDAO {
 
@@ -30,18 +29,6 @@ public class SQLChessGameDAO implements ChessGameDAO {
             """;
 
     public SQLChessGameDAO() throws DataAccessException {
-    }
-
-    public static void main(String [] args) throws DataAccessException {
-        var userDAO = new SQLUserDAO();
-        var gameDAO = new SQLChessGameDAO();
-        var white = userDAO.getUserByUsername("white");
-        var black = userDAO.getUserByUsername("black");
-
-        var game = gameDAO.getById(3);
-
-//        gameDAO.setBlackUser(game, black);
-        gameDAO.setWhiteUser(game, white);
     }
 
     @Override
@@ -122,11 +109,41 @@ public class SQLChessGameDAO implements ChessGameDAO {
 
     @Override
     public Collection<ChessGameModel> getAll() {
-        return List.of();
+        var query = """
+                SELECT
+                    chess_games.id,
+                    chess_games.name,
+                    black_user.username AS black_username,
+                    white_user.username AS white_username
+                FROM
+                    chess_games
+                LEFT JOIN
+                    users black_user ON chess_games.black_user_id = black_user.id
+                LEFT JOIN
+                    users white_user ON chess_games.white_user_id = white_user.id
+                """;
+
+        Set<ChessGameModel> games = new HashSet<>();
+        try (var preparedQuery = conn.prepareStatement(query)) {
+            try (var rs = preparedQuery.executeQuery()) {
+                while(rs.next()) {
+                    games.add(new ChessGameModel(rs.getInt("id"), rs.getString("name"),
+                            rs.getString("white_username"), rs.getString("black_username")));
+                }
+            }
+        } catch (SQLException exc) {
+            throw new RuntimeException(exc);
+        }
+
+        return games;
     }
 
     @Override
     public void clear() {
-
+        try(var preparedStatement = conn.prepareStatement("DELETE FROM chess_games")) {
+            preparedStatement.executeUpdate();
+        } catch(SQLException exc) {
+            throw new RuntimeException(exc);
+        }
     }
 }
