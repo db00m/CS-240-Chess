@@ -1,5 +1,6 @@
 package handlers;
 
+import dataaccess.DataAccessException;
 import handlers.responsebuilder.ResponseBuilder;
 import models.ChessGameModel;
 import responses.GameListResponse;
@@ -28,7 +29,7 @@ public class ListGamesHandler implements Route {
             responseBuilder.prepareSuccessResponse(new GameListResponse(games));
         } catch(UnauthorizedException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 401);
-        } catch(RuntimeException exc) {
+        } catch(RuntimeException | DataAccessException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
         return response.body();

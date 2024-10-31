@@ -16,7 +16,15 @@ class GameServiceTest {
 
     public static ChessGameDAO dao = new MemoryChessGameDAO();
     public static UserDAO userDAO = new MemoryUserDAO();
-    public static GameService service = new GameService();
+    public static GameService service;
+
+    static {
+        try {
+            service = new GameService();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static ChessGameModel existingGame = new ChessGameModel(1, "existing");
     public static ChessGameModel newGame = new ChessGameModel(2, "new");

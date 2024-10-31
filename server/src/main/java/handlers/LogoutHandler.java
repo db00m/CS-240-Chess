@@ -1,5 +1,6 @@
 package handlers;
 
+import dataaccess.DataAccessException;
 import handlers.responsebuilder.ResponseBuilder;
 import responses.BasicResponse;
 import serialize.ObjectSerializer;
@@ -28,7 +29,7 @@ public class LogoutHandler implements Route {
             responseBuilder.prepareSuccessResponse(new BasicResponse());
         } catch(UnauthorizedException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 401);
-        } catch(RuntimeException exc) {
+        } catch(RuntimeException | DataAccessException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
 

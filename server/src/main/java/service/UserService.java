@@ -1,20 +1,19 @@
 package service;
 
-import dataaccess.AuthTokenDAO;
-import dataaccess.MemoryAuthTokenDAO;
-import dataaccess.MemoryUserDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import models.UserModel;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
 
-    private final UserDAO userDAO = new MemoryUserDAO();
-    private final AuthTokenDAO authTokenDAO = new MemoryAuthTokenDAO();
+    private final UserDAO userDAO = new SQLUserDAO();
+    private final AuthTokenDAO authTokenDAO = new SQLAuthTokenDAO();
+
+    public UserService() throws DataAccessException {
+    }
 
     public void registerUser(RegisterRequest request) throws ValidationException {
         UserModel existingUser = userDAO.getUserByUsername(request.username());

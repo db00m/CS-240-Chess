@@ -1,5 +1,6 @@
 package service;
 
+import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import dataaccess.MemoryUserDAO;
 import models.UserModel;
@@ -13,7 +14,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserServiceTest {
 
-    public static UserService service = new UserService();
+    public static UserService service;
+
+    static {
+        try {
+            service = new UserService();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static UserDAO dao = new MemoryUserDAO();
 
     public static UserModel user = new UserModel("username", "password", "fake@email.com");

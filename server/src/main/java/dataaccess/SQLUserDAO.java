@@ -9,7 +9,7 @@ import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO {
 
-    private final Connection conn = DatabaseManager.getConnection();
+    private final Connection conn;
 
     public static String CREATE_TABLE = """
             CREATE TABLE IF NOT EXISTS users (
@@ -22,7 +22,14 @@ public class SQLUserDAO implements UserDAO {
             """;
 
     public SQLUserDAO() throws DataAccessException {
+        conn = DatabaseManager.getConnection();
     }
+
+    public SQLUserDAO(Connection conn) throws DataAccessException {
+        this.conn = conn;
+    }
+
+
 
     @Override
     public void add(UserModel user) {

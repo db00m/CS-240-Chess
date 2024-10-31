@@ -1,5 +1,6 @@
 package handlers;
 
+import dataaccess.DataAccessException;
 import handlers.responsebuilder.ResponseBuilder;
 import responses.BasicResponse;
 import serialize.ObjectSerializer;
@@ -17,7 +18,7 @@ public class ClearDBHandler implements Route {
         try {
             new DBService().clearDB();
             responseBuilder.prepareSuccessResponse(new BasicResponse());
-        } catch(RuntimeException exc) {
+        } catch(RuntimeException | DataAccessException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
 

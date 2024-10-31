@@ -1,11 +1,19 @@
 package server;
 
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import handlers.*;
 import spark.*;
 
 public class Server {
 
     public int run(int desiredPort) {
+        try {
+            DatabaseManager.createDatabase();
+        } catch (DataAccessException exc) {
+            throw new RuntimeException(exc);
+        }
+
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");

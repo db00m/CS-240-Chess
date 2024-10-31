@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthTokenDAO;
+import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthTokenDAO;
 import models.UserModel;
 import org.junit.jupiter.api.*;
@@ -19,7 +20,7 @@ class AuthorizationServiceTest {
     }
 
     @Test
-    public void standardAuthorize() {
+    public void standardAuthorize() throws DataAccessException {
         Assertions.assertNotNull(AuthorizationService.authorize(AUTH_TOKEN.toString()));
     }
 

@@ -9,8 +9,11 @@ import java.util.Collection;
 
 public class GameService {
 
-    private final ChessGameDAO chessGameDAO = new MemoryChessGameDAO();
-    private final UserDAO userDAO = new MemoryUserDAO();
+    private final ChessGameDAO chessGameDAO = new SQLChessGameDAO();
+    private final UserDAO userDAO = new SQLUserDAO();
+
+    public GameService() throws DataAccessException {
+    }
 
     public Collection<ChessGameModel> listGames() {
         return chessGameDAO.getAll();

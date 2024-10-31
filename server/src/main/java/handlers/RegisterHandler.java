@@ -1,5 +1,6 @@
 package handlers;
 
+import dataaccess.DataAccessException;
 import handlers.responsebuilder.ResponseBuilder;
 import requests.InvalidRequestException;
 import requests.LoginRequest;
@@ -34,7 +35,7 @@ public class RegisterHandler implements Route {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 400);
         } catch(ValidationException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 403);
-        } catch(RuntimeException exc) {
+        } catch(RuntimeException | DataAccessException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
 

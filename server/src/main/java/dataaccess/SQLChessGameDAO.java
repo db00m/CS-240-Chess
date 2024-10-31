@@ -12,7 +12,7 @@ import java.util.*;
 
 public class SQLChessGameDAO implements ChessGameDAO {
 
-    Connection conn = DatabaseManager.getConnection();
+    private Connection conn;
 
     //language=MySQL
     public static String CREATE_TABLE = """
@@ -29,6 +29,11 @@ public class SQLChessGameDAO implements ChessGameDAO {
             """;
 
     public SQLChessGameDAO() throws DataAccessException {
+        conn = DatabaseManager.getConnection();
+    }
+
+    public SQLChessGameDAO(Connection conn) throws DataAccessException {
+        this.conn = conn;
     }
 
     @Override

@@ -17,9 +17,14 @@ public class SQLAuthTokenDAO implements AuthTokenDAO {
             );
             """;
 
-    private final Connection conn = DatabaseManager.getConnection();
+    private final Connection conn;
 
     public SQLAuthTokenDAO() throws DataAccessException {
+        this.conn = DatabaseManager.getConnection();
+    }
+
+    public SQLAuthTokenDAO(Connection conn) throws DataAccessException {
+        this.conn = conn;
     }
 
     @Override
@@ -39,7 +44,7 @@ public class SQLAuthTokenDAO implements AuthTokenDAO {
     @Override
     public UserModel getUserByToken(UUID authToken) {
         var statement = """
-                SELECT users.username, users.email
+                SELECT users.id, users.username, users.email
                 FROM auth_tokens
                 LEFT JOIN users
                 ON auth_tokens.user_id = users.id
@@ -50,7 +55,7 @@ public class SQLAuthTokenDAO implements AuthTokenDAO {
                 prepareStatement.setString(1, authToken.toString());
                 try (var rs = prepareStatement.executeQuery()) {
                     if (rs.next()) {
-                        return new UserModel(rs.getString("username"), null, rs.getString("email"));
+                        return new UserModel(rs.getInt("id"), rs.getString("username"), null, rs.getString("email"));
                     }
                 }
             }
