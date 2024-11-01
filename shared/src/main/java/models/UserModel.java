@@ -3,7 +3,7 @@ package models;
 
 import java.util.Objects;
 
-public record UserModel(Integer ID, String username, String password, String email) {
+public record UserModel(Integer id, String username, String password, String email) {
 
     public UserModel(String username, String password, String email) {
         this(null, username, password, email);
@@ -18,11 +18,11 @@ public record UserModel(Integer ID, String username, String password, String ema
             return false;
         }
         UserModel userModel = (UserModel) o;
-        return Objects.equals(ID, userModel.ID) && Objects.equals(email, userModel.email) && Objects.equals(username, userModel.username);
+        return Objects.equals(id, userModel.id) && Objects.equals(email, userModel.email) && Objects.equals(username, userModel.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ID, username, email);
+        return Objects.hash(id, username, email);
     }
 }

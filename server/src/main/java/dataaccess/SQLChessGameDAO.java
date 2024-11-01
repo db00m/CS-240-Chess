@@ -82,14 +82,14 @@ public class SQLChessGameDAO implements ChessGameDAO {
             throw new RuntimeException(exc);
         }
 
-        throw new DataAccessException("Chess Game not found with provided ID");
+        throw new DataAccessException("Chess Game not found with provided id");
     }
 
     @Override
     public void setBlackUser(ChessGameModel game, UserModel user) {
         var statement = "UPDATE chess_games SET black_user_id = ? WHERE id = ?";
         try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setInt(1, user.ID());
+            preparedStatement.setInt(1, user.id());
             preparedStatement.setInt(2, game.getID());
             preparedStatement.executeUpdate();
         } catch (SQLException exc) {
@@ -101,7 +101,7 @@ public class SQLChessGameDAO implements ChessGameDAO {
     public void setWhiteUser(ChessGameModel game, UserModel user) {
         var statement = "UPDATE chess_games SET white_user_id = ? WHERE id = ?";
         try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setInt(1, user.ID());
+            preparedStatement.setInt(1, user.id());
             preparedStatement.setInt(2, game.getID());
             preparedStatement.executeUpdate();
         } catch (SQLException exc) {

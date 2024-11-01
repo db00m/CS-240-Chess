@@ -33,7 +33,7 @@ public class SQLAuthTokenDAO implements AuthTokenDAO {
         try {
             try (var prepareStatement = conn.prepareStatement(statement)) {
                 prepareStatement.setString(1, token.toString());
-                prepareStatement.setInt(2, user.ID());
+                prepareStatement.setInt(2, user.id());
                 prepareStatement.executeUpdate();
             }
         } catch(SQLException exc) {

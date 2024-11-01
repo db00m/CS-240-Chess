@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SQLAuthTokenDAOTest {
 
-    static final SQLAuthTokenDAO authDAO;
-    static final SQLUserDAO userDAO;
+    static SQLAuthTokenDAO authDAO;
+    static SQLUserDAO userDAO;
 
     private static final UUID TOKEN = UUID.randomUUID();
 

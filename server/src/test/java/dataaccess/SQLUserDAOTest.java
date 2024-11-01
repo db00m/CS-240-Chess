@@ -3,16 +3,23 @@ package dataaccess;
 import models.UserModel;
 import org.junit.jupiter.api.*;
 
+import java.sql.Connection;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class SQLUserDAOTest {
 
-    static UserDAO dao;
+    static UserDAO userDAO;
+    static ChessGameDAO gameDAO;
+    static AuthTokenDAO authTokenDAO;
     private static final UserModel BASIC_USER = new UserModel("username", "password", "email");
 
     static {
         try {
-            dao = new SQLUserDAO();
+            Connection conn = DatabaseManager.getConnection();
+            userDAO = new SQLUserDAO(conn);
+            gameDAO = new SQLChessGameDAO(conn);
+            authTokenDAO = new SQLAuthTokenDAO(conn);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -21,44 +28,46 @@ class SQLUserDAOTest {
     @BeforeAll
     static void setup() throws DataAccessException {
         DatabaseManager.createDatabase();
-        dao.clearTable();
+        gameDAO.clear();
+        authTokenDAO.clearTokens();
+        userDAO.clearTable();
     }
 
     @AfterEach
     void clearDB() {
-        dao.clearTable();
+        userDAO.clearTable();
     }
 
     @Test
     void addWithCorrectParams() {
-        assertDoesNotThrow(() -> dao.add(BASIC_USER));
+        assertDoesNotThrow(() -> userDAO.add(BASIC_USER));
     }
 
     @Test
     void addWithIncorrectParams() {
-        assertThrows(RuntimeException.class, () -> dao.add(new UserModel(null, null, null)));
+        assertThrows(RuntimeException.class, () -> userDAO.add(new UserModel(null, null, null)));
     }
 
     @Test
     void getUserByUsernameWhenUserExists() {
-        dao.add(BASIC_USER);
-        assertDoesNotThrow(() -> dao.getUserByUsername(BASIC_USER.username()));
+        userDAO.add(BASIC_USER);
+        assertDoesNotThrow(() -> userDAO.getUserByUsername(BASIC_USER.username()));
     }
 
     @Test
     void getUserByUsernameWhenUseDoesNotExist() {
-        assertNull(dao.getUserByUsername(BASIC_USER.username()));
+        assertNull(userDAO.getUserByUsername(BASIC_USER.username()));
     }
 
     @Test
     void clearTableWhenPopulated() {
-        dao.add(BASIC_USER);
-        assertDoesNotThrow(() -> dao.clearTable());
-        assertNull(dao.getUserByUsername(BASIC_USER.username()));
+        userDAO.add(BASIC_USER);
+        assertDoesNotThrow(() -> userDAO.clearTable());
+        assertNull(userDAO.getUserByUsername(BASIC_USER.username()));
     }
 
     @Test
     void clearTableWhenEmpty() {
-        assertDoesNotThrow(() -> dao.clearTable());
+        assertDoesNotThrow(() -> userDAO.clearTable());
     }
 }

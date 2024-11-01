@@ -165,8 +165,8 @@ public class StandardAPITests {
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
 
         assertHttpOk(createResult);
-        Assertions.assertNotNull(createResult.getGameID(), "Result did not return a game ID");
-        Assertions.assertTrue(createResult.getGameID() > 0, "Result returned invalid game ID");
+        Assertions.assertNotNull(createResult.getGameID(), "Result did not return a game id");
+        Assertions.assertTrue(createResult.getGameID() > 0, "Result returned invalid game id");
     }
 
     @Test
@@ -179,7 +179,7 @@ public class StandardAPITests {
         TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
 
         assertHttpUnauthorized(createResult);
-        Assertions.assertNull(createResult.getGameID(), "Bad result returned a game ID");
+        Assertions.assertNull(createResult.getGameID(), "Bad result returned a game id");
     }
 
     @Test
@@ -258,7 +258,7 @@ public class StandardAPITests {
 
     @Test
     @Order(11)
-    @DisplayName("Join Bad Game ID")
+    @DisplayName("Join Bad Game id")
     public void badGameIDJoin() {
         //create game
         createRequest = new TestCreateRequest("Bad Join");
