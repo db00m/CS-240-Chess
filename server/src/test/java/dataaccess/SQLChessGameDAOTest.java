@@ -150,11 +150,9 @@ class SQLChessGameDAOTest {
                 LIMIT 1
                 """;
         try(var preparedStatement = conn.prepareStatement(statement)) {
-            try (var rs = preparedStatement.executeQuery()) {
-                if (rs.next()) {
-                    return new ChessGameModel(rs.getInt("id"), rs.getString("name"),
-                            rs.getString("white_username"), rs.getString("black_username"));
-                }
+            ChessGameModel game = ChessGameDAO.getChessGame(preparedStatement);
+            if (game != null) {
+                return game;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

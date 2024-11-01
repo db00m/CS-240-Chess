@@ -11,7 +11,7 @@ public class SQLUserDAO implements UserDAO {
 
     private final Connection conn;
 
-    public static String CREATE_TABLE = """
+    public static final String CREATE_TABLE = """
             CREATE TABLE IF NOT EXISTS users (
                 id INT NOT NULL AUTO_INCREMENT,
                 username VARCHAR(225) NOT NULL,

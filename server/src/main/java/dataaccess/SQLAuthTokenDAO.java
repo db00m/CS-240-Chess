@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class SQLAuthTokenDAO implements AuthTokenDAO {
 
-    public static String CREATE_TABLE = """
+    public static final String CREATE_TABLE = """
             CREATE TABLE IF NOT EXISTS auth_tokens(
                 token VARCHAR(40) NOT NULL,
                 user_id INT NOT NULL,

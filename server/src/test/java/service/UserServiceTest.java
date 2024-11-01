@@ -30,6 +30,8 @@ class UserServiceTest {
 
     public static UserModel user = new UserModel("username", "password", "fake@email.com");
 
+
+
     @BeforeEach
     void setup() {
         authDao.clearTokens();
@@ -37,9 +39,8 @@ class UserServiceTest {
     }
 
     @AfterAll
-    static void clear() {
-        authDao.clearTokens();
-        dao.clearTable();
+    static void clear() throws DataAccessException {
+        new DBService().clearDB();
     }
 
     @Test

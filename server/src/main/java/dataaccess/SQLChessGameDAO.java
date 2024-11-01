@@ -5,17 +5,15 @@ import models.ChessGameModel;
 import models.UserModel;
 import serialize.ObjectSerializer;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 public class SQLChessGameDAO implements ChessGameDAO {
 
-    private Connection conn;
+    private final Connection conn;
 
     //language=MySQL
-    public static String CREATE_TABLE = """
+    public static final String CREATE_TABLE = """
             CREATE TABLE IF NOT EXISTS chess_games(
                 id INT NOT NULL AUTO_INCREMENT,
                 name VARCHAR(255) NOT NULL,
@@ -76,10 +74,9 @@ public class SQLChessGameDAO implements ChessGameDAO {
                 """;
         try (var preparedQuery = conn.prepareStatement(query)) {
             preparedQuery.setInt(1, id);
-            try (var rs = preparedQuery.executeQuery()) {
-                if(rs.next()) {
-                    return new ChessGameModel(rs.getInt("id"), rs.getString("name"), rs.getString("white_username"), rs.getString("black_username"));
-                }
+            ChessGameModel game = ChessGameDAO.getChessGame(preparedQuery);
+            if (game != null) {
+                return game;
             }
         } catch(SQLException exc) {
             throw new RuntimeException(exc);

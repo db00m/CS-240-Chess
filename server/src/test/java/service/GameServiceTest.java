@@ -31,8 +31,8 @@ class GameServiceTest {
     public static ChessGameModel existingGame = new ChessGameModel(1, "existing");
     public static ChessGameModel newGame = new ChessGameModel(2, "new");
 
-    @BeforeEach
-    void setup() {
+    @AfterEach
+    void clear() {
         gameDAO.clear();
     }
 
