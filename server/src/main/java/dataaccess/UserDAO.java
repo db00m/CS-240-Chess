@@ -5,6 +5,5 @@ import models.UserModel;
 public interface UserDAO {
     void add(UserModel user);
     UserModel getUserByUsername(String username);
-    void validatePassword(UserModel user, String password);
     void clearTable();
 }

@@ -21,12 +21,6 @@ public class MemoryUserDAO implements UserDAO {
         return USERS_TABLE.getOrDefault(username, null);
     }
 
-    public void validatePassword(UserModel user, String password) throws ValidationException {
-        if (user == null || !Objects.equals(user.password(), password)) {
-            throw new ValidationException("Invalid login credentials");
-        }
-    }
-
     public void clearTable() {
         USERS_TABLE.clear();
     }

@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.*;
 import models.UserModel;
+import org.mindrot.jbcrypt.BCrypt;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 
@@ -19,7 +20,7 @@ public class UserService {
         UserModel existingUser = userDAO.getUserByUsername(request.username());
 
         if (existingUser == null) {
-            userDAO.add(new UserModel(request.username(), request.password(), request.email()));
+            userDAO.add(new UserModel(request.username(), encryptPassword(request.password()), request.email()));
         } else {
             throw new ValidationException("Username already taken");
         }
@@ -27,7 +28,7 @@ public class UserService {
 
     public UUID loginUser(LoginRequest request) throws ValidationException {
         UserModel user =  userDAO.getUserByUsername(request.username());
-        userDAO.validatePassword(user, request.password());
+        validatePassword(user, request.password());
 
         UUID authToken = UUID.randomUUID();
         authTokenDAO.add(authToken, user);
@@ -37,5 +38,15 @@ public class UserService {
 
     public void logoutUser(UUID authToken) throws UnauthorizedException {
         authTokenDAO.delete(authToken);
+    }
+
+    private void validatePassword(UserModel user, String password) {
+        if (user == null || !BCrypt.checkpw(password, user.password())){
+            throw new ValidationException("Invalid login credentials");
+        }
+    }
+
+    private String encryptPassword(String unencryptedPassword) {
+        return BCrypt.hashpw(unencryptedPassword, BCrypt.gensalt());
     }
 }

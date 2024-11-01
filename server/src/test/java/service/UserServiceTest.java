@@ -60,7 +60,7 @@ class UserServiceTest {
 
     @Test
     void successLoginUser() {
-        dao.add(user);
+        registerTestUser();
 
         LoginRequest validRequest = new LoginRequest("username", "password");
 
@@ -76,7 +76,7 @@ class UserServiceTest {
 
     @Test
     void standardLogout() {
-        dao.add(user);
+        registerTestUser();
 
         LoginRequest validRequest = new LoginRequest("username", "password");
         UUID token = service.loginUser(validRequest);
@@ -89,5 +89,10 @@ class UserServiceTest {
     void logoutWithWrongToken() {
         UUID wrongToken = UUID.randomUUID();
         assertDoesNotThrow(() -> service.logoutUser(wrongToken));
+    }
+
+    private void registerTestUser() {
+        RegisterRequest request = new RegisterRequest("username", "password", "fake@email.com");
+        service.registerUser(request);
     }
 }

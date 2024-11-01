@@ -37,7 +37,7 @@ public class SQLUserDAO implements UserDAO {
 
         try (var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.setString(1, user.username());
-            preparedStatement.setString(2, BCrypt.hashpw(user.password(), BCrypt.gensalt()));
+            preparedStatement.setString(2, user.password());
             preparedStatement.setString(3, user.email());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -60,13 +60,6 @@ public class SQLUserDAO implements UserDAO {
         }
 
         return null;
-    }
-
-    @Override
-    public void validatePassword(UserModel user, String password) {
-        if (user == null || !BCrypt.checkpw(password, user.password())){
-            throw new ValidationException("Invalid login credentials");
-        }
     }
 
     @Override
