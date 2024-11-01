@@ -15,17 +15,25 @@ import java.util.UUID;
 
 public class RegisterHandler implements Route {
 
+    ObjectSerializer serializer = new ObjectSerializer();
+    UserService service;
+
+    public RegisterHandler() {
+        try {
+            service = new UserService();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public Object handle(Request request, Response response) {
-        var serializer = new ObjectSerializer();
         var responseBuilder = new ResponseBuilder(serializer, response);
 
         try {
             RegisterRequest registerRequest = serializer.fromJson(request.body(), RegisterRequest.class);
             registerRequest.validate();
 
-            var service = new UserService();
             service.registerUser(registerRequest);
 
             UUID authToken = service.loginUser(new LoginRequest(registerRequest.username(), registerRequest.password()));
@@ -35,7 +43,7 @@ public class RegisterHandler implements Route {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 400);
         } catch(ValidationException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 403);
-        } catch(RuntimeException | DataAccessException exc) {
+        } catch(RuntimeException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
 

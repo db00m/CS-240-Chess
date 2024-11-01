@@ -24,7 +24,8 @@ class AuthorizationServiceTest {
     private static final UUID AUTH_TOKEN = UUID.randomUUID();
 
     @BeforeAll
-    public static void setup() {
+    public static void setup() throws DataAccessException {
+        DatabaseManager.createDatabase();
         userDAO.add(new UserModel("username", "password", "fake@email.com"));
         UserModel user = userDAO.getUserByUsername("username");
         authTokenDAO.add(AUTH_TOKEN, user);

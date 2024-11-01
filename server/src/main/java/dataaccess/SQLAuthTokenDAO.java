@@ -49,6 +49,7 @@ public class SQLAuthTokenDAO implements AuthTokenDAO {
                 LEFT JOIN users
                 ON auth_tokens.user_id = users.id
                 WHERE token = ?
+                LIMIT 1
                 """;
         try {
             try (var prepareStatement = conn.prepareStatement(statement)) {

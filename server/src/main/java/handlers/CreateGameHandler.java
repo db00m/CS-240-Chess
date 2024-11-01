@@ -14,9 +14,20 @@ import spark.Response;
 import spark.Route;
 
 public class CreateGameHandler implements Route {
+
+    private final ObjectSerializer serializer = new ObjectSerializer();
+    private final GameService service;
+
+    public CreateGameHandler() {
+        try {
+            service = new GameService();
+        } catch (DataAccessException exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
     @Override
     public Object handle(Request request, Response response) {
-        var serializer = new ObjectSerializer();
         var responseBuilder = new ResponseBuilder(serializer, response);
 
         try {
@@ -25,7 +36,6 @@ public class CreateGameHandler implements Route {
             CreateGameRequest createRequest = serializer.fromJson(request.body(), CreateGameRequest.class);
             createRequest.validate();
 
-            var service = new GameService();
             int gameID = service.createGame(createRequest.gameName());
 
             responseBuilder.prepareSuccessResponse(new CreateGameResponse(gameID));

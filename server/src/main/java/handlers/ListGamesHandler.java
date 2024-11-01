@@ -15,15 +15,23 @@ import spark.Route;
 import java.util.Collection;
 
 public class ListGamesHandler implements Route {
+    ObjectSerializer serializer = new ObjectSerializer();
+    GameService service;
+
+    public ListGamesHandler() {
+        try {
+            service = new GameService();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public Object handle(Request request, Response response) {
-        var serializer  = new ObjectSerializer();
         var responseBuilder = new ResponseBuilder(serializer, response);
 
         try {
             AuthorizationService.authorize(request.headers("Authorization"));
-
-            var service = new GameService();
 
             Collection<ChessGameModel> games = service.listGames();
             responseBuilder.prepareSuccessResponse(new GameListResponse(games));

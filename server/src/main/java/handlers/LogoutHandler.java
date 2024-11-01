@@ -14,17 +14,26 @@ import spark.Route;
 import java.util.UUID;
 
 public class LogoutHandler implements Route {
+    ObjectSerializer serializer = new ObjectSerializer();
+    UserService service;
+
+    public LogoutHandler() {
+        try {
+            service = new UserService();
+        } catch(DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public Object handle(Request request, Response response) {
-        var serializer  = new ObjectSerializer();
         var responseBuilder = new ResponseBuilder(serializer, response);
 
         try {
-            var userService = new UserService();
             String authTokenString = request.headers("Authorization");
             AuthorizationService.authorize(authTokenString);
 
-            userService.logoutUser(UUID.fromString(authTokenString));
+            service.logoutUser(UUID.fromString(authTokenString));
 
             responseBuilder.prepareSuccessResponse(new BasicResponse());
         } catch(UnauthorizedException exc) {

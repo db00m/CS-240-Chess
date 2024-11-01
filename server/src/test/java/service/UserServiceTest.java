@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 
-import javax.xml.crypto.Data;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;

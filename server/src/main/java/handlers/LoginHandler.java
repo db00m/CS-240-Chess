@@ -16,25 +16,33 @@ import java.util.UUID;
 
 public class LoginHandler implements Route {
 
+    ObjectSerializer serializer = new ObjectSerializer();
+    UserService service;
+
+    public LoginHandler() {
+        try {
+            service = new UserService();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public Object handle(Request request, Response response) {
-        var serializer = new ObjectSerializer();
         var responseBuilder = new ResponseBuilder(serializer, response);
 
         LoginRequest loginRequest = serializer.fromJson(request.body(), LoginRequest.class);
 
         try {
             loginRequest.validate();
-            
-            var userService = new UserService();
 
-            UUID authToken = userService.loginUser(loginRequest);
+            UUID authToken = service.loginUser(loginRequest);
             responseBuilder.prepareSuccessResponse(new LoginResponse(loginRequest.username(), authToken));
         } catch(InvalidRequestException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 400);
         } catch(ValidationException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 401);
-        } catch(RuntimeException | DataAccessException exc) {
+        } catch(RuntimeException exc) {
             responseBuilder.prepareErrorResponse(exc.getMessage(), 500);
         }
 
