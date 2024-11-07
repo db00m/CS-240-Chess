@@ -11,7 +11,7 @@ public class Repl {
         String result;
         Scanner scanner = new Scanner(System.in);
 
-
+        client.help();
         do {
             client.printPrompt();
 
