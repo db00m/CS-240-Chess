@@ -14,10 +14,6 @@ public class ChessBoard implements Cloneable {
 
     ChessPiece[][] boardMatrix = new ChessPiece[8][8];
 
-    public ChessBoard() {
-        
-    }
-
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
@@ -58,6 +54,9 @@ public class ChessBoard implements Cloneable {
         }
     }
 
+    public ChessPiece[][] getBoardMatrix() {
+        return boardMatrix;
+    }
 
     /**
      * Adds a chess piece to the chessboard

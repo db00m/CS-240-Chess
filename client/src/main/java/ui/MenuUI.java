@@ -4,9 +4,12 @@ import static ui.EscapeSequences.*;
 
 public class MenuUI {
 
-    public String toString(String state) {
+    String state = "logged_out";
+
+    @Override
+    public String toString() {
         String menu;
-        
+
         if (state.equals("logged_out")) {
             menu = menuItem("register <USERNAME> <PASSWORD> <EMAIL>", "create an account") +
                     menuItem("login <USERNAME> <PASSWORD>", "start playing chess") +
@@ -31,5 +34,9 @@ public class MenuUI {
                 commandName +
                 SET_TEXT_COLOR_MAGENTA +
                 " -- " + commandDetails + "\n";
+    }
+
+    public void setState(String newState) {
+        this.state = newState;
     }
 }

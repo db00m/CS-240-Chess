@@ -50,7 +50,7 @@ public class ChessClient {
     // universal commands
 
     void help() {
-        System.out.println(menuUI.toString(state));
+        System.out.println(menuUI.toString());
     }
 
     // Pre-login commands
@@ -60,7 +60,9 @@ public class ChessClient {
     }
 
     private void login() {
-
+        state = "logged_in";
+        menuUI.setState(state);
+        help();
     }
 
     private void register() {
