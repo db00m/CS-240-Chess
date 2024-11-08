@@ -11,7 +11,7 @@ import static ui.EscapeSequences.*;
 public class ChessBoardUI {
 
     private static final String BLACK_BOARDER_SQUARE = square(SET_BG_COLOR_LIGHT_GREY, EMPTY);
-    private static final String[] COLUMNS = { " A ", " B ", " C ", " D ", " E ", " F ", " G ", " H " };
+    private static final String[] COLUMNS = { " H ", " G ", " F ", " E ", " D ", " C ", " B ", " A " };
     private static final String[] ROWS = { " 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 " };
 
     private final static Map<ChessPiece.PieceType, String> WHITE_PIECE_MAPPING = Map.of(
@@ -28,9 +28,6 @@ public class ChessBoardUI {
             ChessPiece.PieceType.QUEEN, BLACK_QUEEN,
             ChessPiece.PieceType.KING, BLACK_KING,
             ChessPiece.PieceType.BISHOP, BLACK_BISHOP);
-    private final static Map<ChessGame.TeamColor, String> COLOR_MAPPING = Map.of(
-            ChessGame.TeamColor.BLACK, SET_TEXT_COLOR_BLUE,
-            ChessGame.TeamColor.WHITE, SET_TEXT_COLOR_RED);
 
     private ChessPiece[][] boardState;
     private ChessGame.TeamColor playerTeam;
@@ -41,9 +38,9 @@ public class ChessBoardUI {
     public static void main(String [] args) {
         var board = new ChessBoard();
         board.resetBoard();
-        var gui = new ChessBoardUI(board.getBoardMatrix(), ChessGame.TeamColor.BLACK);
+        var gui = new ChessBoardUI(board.getBoardMatrix(), ChessGame.TeamColor.WHITE);
         System.out.println(gui);
-        gui.setPlayerTeam(ChessGame.TeamColor.WHITE);
+        gui.setPlayerTeam(ChessGame.TeamColor.BLACK);
         System.out.println(gui);
     }
 
@@ -52,20 +49,20 @@ public class ChessBoardUI {
         setPlayerTeam(playerTeam);
     }
 
-//    public void setBoardState(ChessPiece[][] newBoardState) {
-//        boardState = newBoardState;
-//    }
+    public void setBoardState(ChessPiece[][] newBoardState) {
+        boardState = newBoardState;
+    }
 
     public void setPlayerTeam(ChessGame.TeamColor newPlayerTeam) {
         this.playerTeam = newPlayerTeam;
-        if (playerTeam == ChessGame.TeamColor.WHITE) {
-            iterationStart = 0;
-            iterationEnd = 8;
-            iterationDirection = 1;
-        } else {
+        if (playerTeam == ChessGame.TeamColor.BLACK) {
             iterationStart = 7;
             iterationEnd = -1;
             iterationDirection = -1;
+        } else {
+            iterationStart = 0;
+            iterationEnd = 8;
+            iterationDirection = 1;
         }
     }
 
@@ -97,13 +94,18 @@ public class ChessBoardUI {
     }
 
     private String boardRow(int index) {
-        String color = index % 2 == 1 ? SET_BG_COLOR_BLACK : SET_BG_COLOR_WHITE;
+        String color;
+        if (playerTeam == ChessGame.TeamColor.WHITE) {
+            color = index % 2 == 1 ? SET_BG_COLOR_BLACK : SET_BG_COLOR_WHITE;
+        } else {
+            color = index % 2 == 0 ? SET_BG_COLOR_BLACK : SET_BG_COLOR_WHITE;
+        }
 
         StringBuilder rowString = new StringBuilder();
         rowString.append(square(SET_BG_COLOR_LIGHT_GREY, ROWS[index]));
 
         for (int i = iterationStart; i < iterationEnd || i > iterationEnd; i += iterationDirection) {
-            ChessPiece piece = boardState[index][i];
+            ChessPiece piece = boardState[7 - index][i];
             if (piece == null) {
                 rowString.append(square(color, EMPTY));
             } else {
