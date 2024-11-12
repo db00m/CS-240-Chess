@@ -22,15 +22,11 @@ public class ServerFacade {
         return new ChessGame();
     }
 
-    public void register(String username, String password, String email) {
+    public void register(String username, String password, String email) throws IOException {
         var request = new RegisterRequest(username, password, email);
         String requestBody = serializer.toJson(request);
 
-        try {
-            connectionManager.doPost("/user", requestBody, Collections.emptyMap());
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-        }
+        connectionManager.doPost("/user", requestBody, Collections.emptyMap());
     }
 
     public void login(String username, String password) {

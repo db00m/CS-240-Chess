@@ -6,6 +6,7 @@ import ui.MenuUI;
 import static ui.EscapeSequences.*;
 
 
+import java.io.IOException;
 import java.util.Arrays;
 
 
@@ -94,8 +95,18 @@ public class ChessClient {
     }
 
     private void register(String[] params) {
-        serverFacade.register(params[0], params[1], params[2]);
-        setLoggedInState();
+        try {
+            if (params.length < 3) {
+                throw new InvalidParamsException("Username, password, and email are required for registering.");
+            } else {
+                serverFacade.register(params[0], params[1], params[2]);
+                setLoggedInState();
+            }
+        } catch (InvalidParamsException | IOException e) {
+            handleError(e.getMessage());
+        }
+
+
     }
 
     // Post-login commands
