@@ -6,7 +6,6 @@ import ui.MenuUI;
 import static ui.EscapeSequences.*;
 
 
-import java.io.IOException;
 import java.util.Arrays;
 
 
@@ -17,7 +16,7 @@ public class ChessClient {
     ServerFacade serverFacade;
     ChessBoardUI boardUI = new ChessBoardUI(new ChessGame().getBoard().getBoardMatrix(), ChessGame.TeamColor.WHITE);
 
-    public ChessClient(String url) throws IOException {
+    public ChessClient(String url) {
         serverFacade = new ServerFacade(url);
     }
 
@@ -73,7 +72,7 @@ public class ChessClient {
     }
 
     private void login(String[] params) {
-        System.out.println( SET_TEXT_COLOR_WHITE + "Logging you in...");
+        System.out.println(SET_TEXT_COLOR_WHITE + "Logging you in...");
 
         try {
             if (params.length < 2) {
@@ -81,18 +80,22 @@ public class ChessClient {
             }
 
             // TODO: Attempt login
-            state = "logged_in";
-            menuUI.setState(state);
-            help();
+            setLoggedInState();
 
         } catch (InvalidParamsException e) {
             handleError(e.getMessage());
         }
     }
 
+    private void setLoggedInState() {
+        state = "logged_in";
+        menuUI.setState(state);
+        help();
+    }
+
     private void register(String[] params) {
-        // TODO: Attempt register through http
-        // TODO: Print accept or reject message
+        serverFacade.register(params[0], params[1], params[2]);
+        setLoggedInState();
     }
 
     // Post-login commands
