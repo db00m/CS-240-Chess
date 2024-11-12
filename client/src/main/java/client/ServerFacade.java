@@ -1,13 +1,14 @@
 package client;
 
 import chess.ChessGame;
-import requests.LoginRequest;
-import requests.RegisterRequest;
-import responses.LoginResponse;
+import models.ChessGameModel;
+import requests.*;
+import responses.*;
 import serialize.ObjectSerializer;
 import serverconnection.ConnectionManager;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -48,10 +49,25 @@ public class ServerFacade {
     }
 
     public void logout(String token) throws IOException {
-        Map<String, String> headers = Map.of(
-                "Authorization", token
-        );
+        Map<String, String> headers = Map.of("Authorization", token);
 
         connectionManager.doDelete("/session", headers);
+    }
+
+    public void createGame(String token, String name) throws IOException {
+        Map<String, String> headers = Map.of("Authorization", token);
+
+        String requestBody = serializer.toJson(new CreateGameRequest(name));
+
+        connectionManager.doPost("/game", requestBody, headers);
+    }
+
+    public Collection<ChessGameModel> getGameList(String token) throws IOException {
+        Map<String, String> headers = Map.of("Authorization", token);
+        GameListResponse response = serializer.fromJson(
+                connectionManager.doGet("/game", headers), GameListResponse.class
+        );
+
+        return response.games();
     }
 }

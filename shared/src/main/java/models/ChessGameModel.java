@@ -63,11 +63,19 @@ public class ChessGameModel {
 
     @Override
     public String toString() {
-        return "ChessGameModel{" +
-               "gameID=" + gameID +
-               ", gameName='" + gameName + '\'' +
-               ", whiteUsername='" + whiteUsername + '\'' +
-               ", blackUsername='" + blackUsername + '\'' +
-               '}';
+        String whiteUsernameString = whiteUsername;
+        String blackUsernameString = blackUsername;
+
+        if (whiteUsernameString == null) {
+            whiteUsernameString = "<AVAILABLE>";
+        }
+
+        if (blackUsernameString == null) {
+            blackUsernameString = "<AVAILABLE>";
+        }
+
+        return gameName + ":" +
+                "\n\t WHITE -- " + whiteUsernameString +
+                "\n\t BLACK -- " + blackUsernameString + "\n";
     }
 }

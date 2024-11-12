@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import models.ChessGameModel;
 import ui.ChessBoardUI;
 import ui.MenuUI;
 import static ui.EscapeSequences.*;
@@ -8,22 +9,26 @@ import static ui.EscapeSequences.*;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ChessClient {
 
-    String authToken;
-    MenuUI menuUI = new MenuUI();
-    ServerFacade serverFacade;
-    ChessBoardUI boardUI = new ChessBoardUI(new ChessGame().getBoard().getBoardMatrix(), ChessGame.TeamColor.WHITE);
+    private String authToken;
+    private final MenuUI menuUI = new MenuUI();
+    private final ServerFacade serverFacade;
+    private final ChessBoardUI boardUI = new ChessBoardUI(new ChessGame().getBoard().getBoardMatrix(), ChessGame.TeamColor.WHITE);
+    private final Map<Integer, Integer> gameMapping = new HashMap<>();
 
     public ChessClient(String url) {
         serverFacade = new ServerFacade(url);
     }
 
     void eval(String input) {
-        String[] tokens = input.toLowerCase().split(" ");
-        String cmd = (tokens.length > 0) ? tokens[0] : "help";
+        String[] tokens = input.split(" ");
+        String cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
         String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
 
         if (authToken == null) {
@@ -134,12 +139,35 @@ public class ChessClient {
     }
 
     private void createGame(String[] params) {
-        // TODO: Attempt game creation
+        try {
+            if (params.length < 1) {
+                throw new InvalidParamsException("Game name is required");
+            }
+
+            String gameName = String.join(" ", params);
+
+            serverFacade.createGame(authToken, gameName);
+        } catch (IOException | InvalidParamsException e) {
+            handleError(e.getMessage());
+        }
         // TODO: Print success or error message
     }
 
     private void listGames() {
-        // TODO: Get games through Http
+        try {
+            Collection<ChessGameModel> gameList = serverFacade.getGameList(authToken);
+
+            gameMapping.clear();
+
+            int count = 1;
+            for (ChessGameModel game : gameList) {
+                gameMapping.put(count, game.getID());
+                System.out.println(count + ". " + game);
+                count ++;
+            }
+        } catch (IOException e) {
+            handleError(e.getMessage());
+        }
         // TODO: Print game list
 
         // TODO: Might want to store game list, this way we can use UI ID's not DB ID's for game selection

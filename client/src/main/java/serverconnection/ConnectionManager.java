@@ -26,8 +26,8 @@ public class ConnectionManager {
         return doRequestWithBody(path, putBody, headers, "PUT");
     }
 
-    public String doDelete(String path, Map<String, String> headers) throws IOException {
-        return doRequestWithoutBody(path, headers, "DELETE");
+    public void doDelete(String path, Map<String, String> headers) throws IOException {
+        doRequestWithoutBody(path, headers, "DELETE");
     }
 
 
