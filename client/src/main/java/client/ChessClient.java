@@ -73,7 +73,9 @@ public class ChessClient {
     // Pre-login commands
 
     private void quit() {
-        // TODO: logout player if logged in
+        if (authToken != null) {
+            logout();
+        }
         // TODO: print exit message
     }
 
@@ -106,7 +108,6 @@ public class ChessClient {
 
         this.authToken = null;
         menuUI.setState("logged_out");
-        help();
     }
 
     private void register(String[] params) {
