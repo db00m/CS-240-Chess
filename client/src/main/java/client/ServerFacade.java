@@ -1,13 +1,16 @@
 package client;
 
 import chess.ChessGame;
+import requests.LoginRequest;
 import requests.RegisterRequest;
+import responses.LoginResponse;
 import serialize.ObjectSerializer;
 import serverconnection.ConnectionManager;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 
 
 public class ServerFacade {
@@ -22,14 +25,25 @@ public class ServerFacade {
         return new ChessGame();
     }
 
-    public void register(String username, String password, String email) throws IOException {
+    public String register(String username, String password, String email) throws IOException {
         var request = new RegisterRequest(username, password, email);
         String requestBody = serializer.toJson(request);
 
-        connectionManager.doPost("/user", requestBody, Collections.emptyMap());
+        LoginResponse response = serializer.fromJson(
+                connectionManager.doPost("/user", requestBody, Collections.emptyMap()), LoginResponse.class
+        );
+
+        return response.authToken().toString();
     }
 
-    public void login(String username, String password) {
+    public String login(String username, String password) throws IOException {
+        var request = new LoginRequest(username, password);
+        String requestBody = serializer.toJson(request);
 
+        LoginResponse response = serializer.fromJson(
+                connectionManager.doPost("/session", requestBody, Collections.emptyMap()), LoginResponse.class
+        );
+
+        return response.authToken().toString();
     }
 }

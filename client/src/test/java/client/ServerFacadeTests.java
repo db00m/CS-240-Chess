@@ -49,4 +49,16 @@ public class ServerFacadeTests {
     public void registerWithError() {
         assertThrows(IOException.class, () -> facade.register(null, "u", "u"));
     }
+
+    @Test
+    public void standardLogin() {
+        assertDoesNotThrow(() -> facade.register("u", "u", "u"));
+        assertDoesNotThrow(() -> facade.login("u", "u"));
+    }
+
+    @Test
+    public void loginWithError() {
+        assertDoesNotThrow(() -> facade.register("u", "u", "u"));
+        assertThrows(IOException.class, () -> facade.login("u", "q"));
+    }
 }

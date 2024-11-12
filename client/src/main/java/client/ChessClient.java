@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 public class ChessClient {
 
-    String state = "logged_out";
+    String authToken;
     MenuUI menuUI = new MenuUI();
     ServerFacade serverFacade;
     ChessBoardUI boardUI = new ChessBoardUI(new ChessGame().getBoard().getBoardMatrix(), ChessGame.TeamColor.WHITE);
@@ -26,7 +26,7 @@ public class ChessClient {
         String cmd = (tokens.length > 0) ? tokens[0] : "help";
         String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
 
-        if (state.equals("logged_out")) {
+        if (authToken == null) {
             switch (cmd) {
                 case "help" -> help();
                 case "quit" -> quit();
@@ -50,7 +50,7 @@ public class ChessClient {
 
     public void printPrompt() {
         String prompt = "[LOGGED_OUT] >>> ";
-        if (state.equals("logged_in")) {
+        if (authToken != null) {
             prompt = "[LOGGED_IN] >>> ";
         }
 
@@ -80,17 +80,24 @@ public class ChessClient {
                 throw new InvalidParamsException("Username and password are required for login");
             }
 
-            // TODO: Attempt login
-            setLoggedInState();
+            String token = serverFacade.login(params[0], params[1]);
+            setLoggedInState(token);
 
-        } catch (InvalidParamsException e) {
+        } catch (InvalidParamsException | IOException e) {
             handleError(e.getMessage());
         }
     }
 
-    private void setLoggedInState() {
-        state = "logged_in";
-        menuUI.setState(state);
+    private void setLoggedInState(String authToken) {
+        System.out.println(SET_TEXT_COLOR_GREEN + "Success!");
+        this.authToken = authToken;
+        menuUI.setState("logged_in");
+        help();
+    }
+
+    private void setLoggedOutState() {
+        this.authToken = null;
+        menuUI.setState("logged_out");
         help();
     }
 
@@ -99,8 +106,9 @@ public class ChessClient {
             if (params.length < 3) {
                 throw new InvalidParamsException("Username, password, and email are required for registering.");
             } else {
-                serverFacade.register(params[0], params[1], params[2]);
-                setLoggedInState();
+                System.out.println(SET_TEXT_COLOR_WHITE + "Processing your registration...");
+                String token = serverFacade.register(params[0], params[1], params[2]);
+                setLoggedInState(token);
             }
         } catch (InvalidParamsException | IOException e) {
             handleError(e.getMessage());
@@ -113,8 +121,7 @@ public class ChessClient {
 
     private void logout() {
         // TODO: Attempt logout through http
-        state = "logged_out";
-        menuUI.setState(state);
+        setLoggedOutState();
     }
 
     private void createGame(String[] params) {
@@ -158,7 +165,7 @@ public class ChessClient {
     private void handleError(String message) {
         System.out.println(
                 SET_TEXT_COLOR_RED +
-                message +
+                message + ", please try again." +
                 RESET_TEXT_COLOR
         );
     }
