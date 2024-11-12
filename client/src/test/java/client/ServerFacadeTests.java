@@ -42,7 +42,7 @@ public class ServerFacadeTests {
 
     @Test
     public void standardRegister() {
-        assertDoesNotThrow(() -> facade.register("u", "u", "u"));
+        registerUser();
     }
 
     @Test
@@ -52,13 +52,28 @@ public class ServerFacadeTests {
 
     @Test
     public void standardLogin() {
-        assertDoesNotThrow(() -> facade.register("u", "u", "u"));
+        registerUser();
         assertDoesNotThrow(() -> facade.login("u", "u"));
     }
 
     @Test
     public void loginWithError() {
-        assertDoesNotThrow(() -> facade.register("u", "u", "u"));
+        registerUser();
         assertThrows(IOException.class, () -> facade.login("u", "q"));
+    }
+
+    @Test
+    public void standardLogout() throws IOException {
+        String token  = facade.register("u", "u", "u");
+        assertDoesNotThrow(() -> facade.logout(token));
+    }
+
+    @Test void logoutWithError() {
+        registerUser();
+        assertThrows(IOException.class, () -> facade.logout("fake token"));
+    }
+
+    private void registerUser() {
+        assertDoesNotThrow(() -> facade.register("u", "u", "u"));
     }
 }

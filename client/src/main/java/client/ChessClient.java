@@ -90,12 +90,15 @@ public class ChessClient {
 
     private void setLoggedInState(String authToken) {
         System.out.println(SET_TEXT_COLOR_GREEN + "Success!");
+
         this.authToken = authToken;
         menuUI.setState("logged_in");
         help();
     }
 
     private void setLoggedOutState() {
+        System.out.println(SET_TEXT_COLOR_GREEN + "Success!");
+
         this.authToken = null;
         menuUI.setState("logged_out");
         help();
@@ -120,8 +123,14 @@ public class ChessClient {
     // Post-login commands
 
     private void logout() {
-        // TODO: Attempt logout through http
-        setLoggedOutState();
+        System.out.println(SET_TEXT_COLOR_WHITE + "Logging you out...");
+
+        try {
+            serverFacade.logout(authToken);
+            setLoggedOutState();
+        } catch (IOException e) {
+            handleError(e.getMessage());
+        }
     }
 
     private void createGame(String[] params) {

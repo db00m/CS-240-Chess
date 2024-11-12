@@ -46,4 +46,12 @@ public class ServerFacade {
 
         return response.authToken().toString();
     }
+
+    public void logout(String token) throws IOException {
+        Map<String, String> headers = Map.of(
+                "Authorization", token
+        );
+
+        connectionManager.doDelete("/session", headers);
+    }
 }
