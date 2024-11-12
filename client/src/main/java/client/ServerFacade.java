@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.UUID;
 
 
 public class ServerFacade {
@@ -79,7 +78,7 @@ public class ServerFacade {
         }
     }
 
-    public Collection<ChessGameModel> getGameList(String token) throws IOException {
+    public Collection<ChessGameModel> listGames(String token) throws IOException {
         Map<String, String> headers = Map.of("Authorization", token);
         try {
             GameListResponse response = serializer.fromJson(
@@ -87,6 +86,17 @@ public class ServerFacade {
             );
 
             return response.games();
+        } catch (HTTPResponseException e) {
+            throw new IOException(parseError(e.getMessage()));
+        }
+    }
+
+    public void joinGame(String token, ChessGame.TeamColor teamColor, int gameID) throws IOException {
+        Map<String, String> headers = Map.of("Authorization", token);
+        String requestBody = serializer.toJson(new JoinGameRequest(teamColor, gameID));
+
+        try {
+            connectionManager.doPut("/game", requestBody, headers);
         } catch (HTTPResponseException e) {
             throw new IOException(parseError(e.getMessage()));
         }

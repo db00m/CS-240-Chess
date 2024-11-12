@@ -37,7 +37,7 @@ public class ChessClient {
                 case "quit" -> quit();
                 case "login" -> login(params);
                 case "register" -> register(params);
-                default -> invalidCommand();
+                default -> handleInvalidCommand();
             }
         } else {
             switch (cmd) {
@@ -48,7 +48,7 @@ public class ChessClient {
                 case "list" -> listGames();
                 case "join" -> playGame(params);
                 case "observe" -> observeGame(params);
-                default -> invalidCommand();
+                default -> handleInvalidCommand();
             }
         }
     }
@@ -156,7 +156,7 @@ public class ChessClient {
 
     private void listGames() {
         try {
-            Collection<ChessGameModel> gameList = serverFacade.getGameList(authToken);
+            Collection<ChessGameModel> gameList = serverFacade.listGames(authToken);
 
             gameMapping.clear();
 
@@ -185,7 +185,7 @@ public class ChessClient {
         System.out.println(boardUI);
     }
 
-    private void invalidCommand() {
+    private void handleInvalidCommand() {
         handleError("Command entered is not recognized, please enter a valid command");
         help();
     }
