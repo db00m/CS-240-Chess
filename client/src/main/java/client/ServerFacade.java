@@ -22,10 +22,6 @@ public class ServerFacade {
         connectionManager = new ConnectionManager(urlString);
     }
 
-    public ChessGame getGame(int _id) {
-        return new ChessGame();
-    }
-
     public String register(String username, String password, String email) throws IOException {
         var request = new RegisterRequest(username, password, email);
         String requestBody = serializer.toJson(request);

@@ -76,7 +76,6 @@ public class ChessClient {
         if (authToken != null) {
             logout();
         }
-        // TODO: print exit message
     }
 
     private void login(String[] params) {
@@ -173,7 +172,6 @@ public class ChessClient {
     }
 
     private void playGame(String[] params) {
-
         try {
 
             if (params.length < 2) {
