@@ -168,9 +168,6 @@ public class ChessClient {
         } catch (IOException e) {
             handleError(e.getMessage());
         }
-        // TODO: Print game list
-
-        // TODO: Might want to store game list, this way we can use UI ID's not DB ID's for game selection
     }
 
     private void playGame(String[] params) {

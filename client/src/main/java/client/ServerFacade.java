@@ -6,6 +6,7 @@ import requests.*;
 import responses.*;
 import serialize.ObjectSerializer;
 import serverconnection.ConnectionManager;
+import serverconnection.HTTPResponseException;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -30,28 +31,40 @@ public class ServerFacade {
         var request = new RegisterRequest(username, password, email);
         String requestBody = serializer.toJson(request);
 
-        LoginResponse response = serializer.fromJson(
-                connectionManager.doPost("/user", requestBody, Collections.emptyMap()), LoginResponse.class
-        );
+        try {
+            LoginResponse response = serializer.fromJson(
+                    connectionManager.doPost("/user", requestBody, Collections.emptyMap()), LoginResponse.class
+            );
 
-        return response.authToken().toString();
+            return response.authToken().toString();
+        } catch (HTTPResponseException e) {
+            throw new IOException(parseError(e.getMessage()));
+        }
     }
 
     public String login(String username, String password) throws IOException {
         var request = new LoginRequest(username, password);
         String requestBody = serializer.toJson(request);
 
-        LoginResponse response = serializer.fromJson(
-                connectionManager.doPost("/session", requestBody, Collections.emptyMap()), LoginResponse.class
-        );
+        try {
+            LoginResponse response = serializer.fromJson(
+                    connectionManager.doPost("/session", requestBody, Collections.emptyMap()), LoginResponse.class
+            );
 
-        return response.authToken().toString();
+            return response.authToken().toString();
+        } catch (HTTPResponseException e) {
+            throw new IOException(parseError(e.getMessage()));
+        }
     }
 
     public void logout(String token) throws IOException {
         Map<String, String> headers = Map.of("Authorization", token);
 
-        connectionManager.doDelete("/session", headers);
+        try {
+            connectionManager.doDelete("/session", headers);
+        } catch (HTTPResponseException e) {
+            throw new IOException(parseError(e.getMessage()));
+        }
     }
 
     public void createGame(String token, String name) throws IOException {
@@ -59,15 +72,27 @@ public class ServerFacade {
 
         String requestBody = serializer.toJson(new CreateGameRequest(name));
 
-        connectionManager.doPost("/game", requestBody, headers);
+        try {
+            connectionManager.doPost("/game", requestBody, headers);
+        } catch (HTTPResponseException e) {
+            throw new IOException(parseError(e.getMessage()));
+        }
     }
 
     public Collection<ChessGameModel> getGameList(String token) throws IOException {
         Map<String, String> headers = Map.of("Authorization", token);
-        GameListResponse response = serializer.fromJson(
-                connectionManager.doGet("/game", headers), GameListResponse.class
-        );
+        try {
+            GameListResponse response = serializer.fromJson(
+                    connectionManager.doGet("/game", headers), GameListResponse.class
+            );
 
-        return response.games();
+            return response.games();
+        } catch (HTTPResponseException e) {
+            throw new IOException(parseError(e.getMessage()));
+        }
+    }
+
+    private String parseError(String errorBody) {
+        return serializer.fromJson(errorBody, BasicResponse.class).message();
     }
 }

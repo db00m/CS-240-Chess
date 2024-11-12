@@ -1,5 +1,7 @@
 package serverconnection;
 
+import responses.BasicResponse;
+
 import java.io.*;
 import java.net.*;
 import java.util.Map;
@@ -14,26 +16,25 @@ public class ConnectionManager {
 
 
 
-    public String doGet(String path, Map<String, String> headers) throws IOException {
+    public String doGet(String path, Map<String, String> headers) throws IOException, HTTPResponseException {
         return doRequestWithoutBody(path, headers, "GET");
     }
 
-    public String doPost(String path, String postBody, Map<String, String> headers) throws IOException {
+    public String doPost(String path, String postBody, Map<String, String> headers) throws IOException, HTTPResponseException {
         return doRequestWithBody(path, postBody, headers, "POST");
     }
 
-    public String doPut(String path, String putBody, Map<String, String> headers) throws IOException {
+    public String doPut(String path, String putBody, Map<String, String> headers) throws IOException, HTTPResponseException {
         return doRequestWithBody(path, putBody, headers, "PUT");
     }
 
-    public void doDelete(String path, Map<String, String> headers) throws IOException {
+    public void doDelete(String path, Map<String, String> headers) throws IOException, HTTPResponseException {
         doRequestWithoutBody(path, headers, "DELETE");
     }
 
 
 
-    private String doRequestWithoutBody(String path, Map<String, String> headers, String method) throws IOException {
-
+    private String doRequestWithoutBody(String path, Map<String, String> headers, String method) throws IOException, HTTPResponseException {
         HttpURLConnection connection = getConnection(path);
 
         configureConnection(connection, headers);
@@ -45,7 +46,7 @@ public class ConnectionManager {
         return getResponseBody(connection.getInputStream());
     }
 
-    private String doRequestWithBody(String path, String postBody, Map<String, String> headers, String method) throws IOException {
+    private String doRequestWithBody(String path, String postBody, Map<String, String> headers, String method) throws IOException, HTTPResponseException {
         HttpURLConnection connection = getConnection(path);
 
         configureConnection(connection, headers);
@@ -101,10 +102,10 @@ public class ConnectionManager {
 
     }
 
-    private void checkResponseStatus(HttpURLConnection connection) throws IOException {
+    private void checkResponseStatus(HttpURLConnection connection) throws HTTPResponseException, IOException {
         int httpStatus = connection.getResponseCode();
         if (httpStatus > 300) {
-            throw new IOException("Error: " + getResponseBody(connection.getErrorStream())); // TODO: Parse error body
+            throw new HTTPResponseException(getResponseBody(connection.getErrorStream())); // TODO: Parse error body
         }
     }
 }
