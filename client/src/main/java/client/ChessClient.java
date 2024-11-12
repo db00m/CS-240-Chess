@@ -172,12 +172,34 @@ public class ChessClient {
     }
 
     private void playGame(String[] params) {
-        ChessGame.TeamColor color = params[1].equalsIgnoreCase("black") ?
-                ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
-        // TODO: Attempt to join game through HTTP as color requested in params
-        // TODO: Get game by ID
-        boardUI.setPlayerTeam(color);
-        System.out.println(boardUI);
+
+        try {
+
+            if (params.length < 2) {
+                throw new InvalidParamsException("Game ID and team color (BLACK|WHITE) are required");
+            } else if (!params[1].equalsIgnoreCase("black") &&
+                    !params[1].equalsIgnoreCase("white")) {
+                throw new InvalidParamsException("Team color must be 'BLACK' or 'WHITE'");
+            }
+
+            ChessGame.TeamColor color = params[1].equalsIgnoreCase("black") ?
+                    ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+
+            Integer gameID = gameMapping.get(Integer.parseInt(params[0]));
+
+            if(gameID == null) {
+                throw new InvalidParamsException("Game with an ID of: " + params[0] + " does not exist");
+            }
+
+            serverFacade.joinGame(authToken, color, gameID);
+
+            boardUI.setPlayerTeam(color);
+            System.out.println(boardUI);
+
+        } catch (IOException | InvalidParamsException e) {
+            handleError(e.getMessage());
+        }
+
     }
 
     private void observeGame(String[] _params) {
