@@ -67,7 +67,7 @@ public class ChessClient {
     // universal commands
 
     void help() {
-        System.out.println(menuUI.toString());
+        System.out.println(menuUI);
     }
 
     // Pre-login commands
@@ -78,7 +78,7 @@ public class ChessClient {
     }
 
     private void login(String[] params) {
-        System.out.println(SET_TEXT_COLOR_WHITE + "Logging you in...");
+        printStatusMessage("Logging you in...");
 
         try {
             if (params.length < 2) {
@@ -94,7 +94,7 @@ public class ChessClient {
     }
 
     private void setLoggedInState(String authToken) {
-        System.out.println(SET_TEXT_COLOR_GREEN + "Success!");
+        printSuccessMessage("Success!");
 
         this.authToken = authToken;
         menuUI.setState("logged_in");
@@ -102,7 +102,7 @@ public class ChessClient {
     }
 
     private void setLoggedOutState() {
-        System.out.println(SET_TEXT_COLOR_GREEN + "Success!");
+        printSuccessMessage("Success!");
 
         this.authToken = null;
         menuUI.setState("logged_out");
@@ -114,7 +114,7 @@ public class ChessClient {
             if (params.length < 3) {
                 throw new InvalidParamsException("Username, password, and email are required for registering.");
             } else {
-                System.out.println(SET_TEXT_COLOR_WHITE + "Processing your registration...");
+                printStatusMessage("Processing your registration...");
                 String token = serverFacade.register(params[0], params[1], params[2]);
                 setLoggedInState(token);
             }
@@ -128,7 +128,7 @@ public class ChessClient {
     // Post-login commands
 
     private void logout() {
-        System.out.println(SET_TEXT_COLOR_WHITE + "Logging you out...");
+        printStatusMessage("Logging you out...");
 
         try {
             serverFacade.logout(authToken);
@@ -143,14 +143,15 @@ public class ChessClient {
             if (params.length < 1) {
                 throw new InvalidParamsException("Game name is required");
             }
+            printStatusMessage("Creating game...");
 
             String gameName = String.join(" ", params);
 
             serverFacade.createGame(authToken, gameName);
+            printSuccessMessage(gameName + " successfully created!");
         } catch (IOException | InvalidParamsException e) {
             handleError(e.getMessage());
         }
-        // TODO: Print success or error message
     }
 
     private void listGames() {
@@ -179,27 +180,32 @@ public class ChessClient {
         System.out.println(boardUI);
     }
 
-    private void observeGame(String[] params) {
+    private void observeGame(String[] _params) {
         // TODO: get game by ID provided by params
         System.out.println(boardUI);
     }
 
     private void invalidCommand() {
-        System.out.println(
-                SET_TEXT_COLOR_RED +
-                SET_TEXT_BOLD +
-                "Command entered is not recognized, please enter a valid command" +
-                RESET_TEXT_COLOR +
-                RESET_TEXT_BOLD_FAINT
-        );
-
+        handleError("Command entered is not recognized, please enter a valid command");
         help();
     }
 
     private void handleError(String message) {
+        printColoredMessage(message + ", please try again.", SET_TEXT_COLOR_RED);
+    }
+
+    private void printSuccessMessage(String message) {
+        printColoredMessage(message, SET_TEXT_COLOR_GREEN);
+    }
+
+    private void printStatusMessage(String message) {
+        printColoredMessage(message, SET_TEXT_COLOR_WHITE);
+    }
+
+    private void printColoredMessage(String message, String color) {
         System.out.println(
-                SET_TEXT_COLOR_RED +
-                message + ", please try again." +
+                color +
+                message +
                 RESET_TEXT_COLOR
         );
     }

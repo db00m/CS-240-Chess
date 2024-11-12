@@ -41,7 +41,7 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void standardRegister() {
+    public void standardRegister() throws IOException {
         registerUser();
     }
 
@@ -51,29 +51,54 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void standardLogin() {
+    public void standardLogin() throws IOException {
         registerUser();
         assertDoesNotThrow(() -> facade.login("u", "u"));
     }
 
     @Test
-    public void loginWithError() {
+    public void loginWithError() throws IOException {
         registerUser();
         assertThrows(IOException.class, () -> facade.login("u", "q"));
     }
 
     @Test
     public void standardLogout() throws IOException {
-        String token  = facade.register("u", "u", "u");
+        String token = registerUser();
         assertDoesNotThrow(() -> facade.logout(token));
     }
 
-    @Test void logoutWithError() {
+    @Test
+    public void logoutWithError() throws IOException {
         registerUser();
         assertThrows(IOException.class, () -> facade.logout("fake token"));
     }
 
-    private void registerUser() {
-        assertDoesNotThrow(() -> facade.register("u", "u", "u"));
+    @Test
+    public void standardCreate() throws  IOException {
+        String token = registerUser();
+        assertDoesNotThrow(() -> facade.createGame(token, "New Game"));
+    }
+
+    @Test
+    public void createWithError() throws  IOException {
+        registerUser();
+        assertThrows(IOException.class, () -> facade.createGame("fake token", "New Game"));
+    }
+
+    @Test
+    public void standardList() throws IOException {
+        String token = registerUser();
+        assertDoesNotThrow(() -> facade.getGameList(token));
+    }
+
+    @Test
+    public void listWithError() throws IOException {
+        registerUser();
+        assertThrows(IOException.class, () -> facade.getGameList("fake"));
+    }
+
+    private String registerUser() throws IOException {
+        return facade.register("u", "u", "u");
     }
 }
