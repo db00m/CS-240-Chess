@@ -201,8 +201,7 @@ public class ChessClient {
 
     }
 
-    private void observeGame(String[] _params) {
-        // TODO: get game by ID provided by params
+    private void observeGame(String[] params) {
         System.out.println(boardUI);
     }
 

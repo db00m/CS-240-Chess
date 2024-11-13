@@ -46,7 +46,8 @@ public class ConnectionManager {
         return getResponseBody(connection.getInputStream());
     }
 
-    private String doRequestWithBody(String path, String postBody, Map<String, String> headers, String method) throws IOException, HTTPResponseException {
+    private String doRequestWithBody(String path, String postBody, Map<String, String> headers, String method)
+            throws IOException, HTTPResponseException {
         HttpURLConnection connection = getConnection(path);
 
         configureConnection(connection, headers);
@@ -105,7 +106,7 @@ public class ConnectionManager {
     private void checkResponseStatus(HttpURLConnection connection) throws HTTPResponseException, IOException {
         int httpStatus = connection.getResponseCode();
         if (httpStatus > 300) {
-            throw new HTTPResponseException(getResponseBody(connection.getErrorStream())); // TODO: Parse error body
+            throw new HTTPResponseException(getResponseBody(connection.getErrorStream()));
         }
     }
 }
