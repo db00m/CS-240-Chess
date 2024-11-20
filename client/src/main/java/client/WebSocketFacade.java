@@ -22,7 +22,6 @@ public class WebSocketFacade extends Endpoint {
         } catch (URISyntaxException | DeploymentException e) {
             throw new IOException(e);
         }
-
     }
 
     public void send(String msg) throws Exception {
