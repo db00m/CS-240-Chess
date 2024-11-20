@@ -4,6 +4,8 @@ import chess.ChessGame;
 import models.ChessGameModel;
 import ui.ChessBoardUI;
 import ui.MenuUI;
+import ui.MessagePresenter;
+
 import static ui.EscapeSequences.*;
 
 
@@ -16,14 +18,21 @@ import java.util.Map;
 
 public class ChessClient {
 
-    private String authToken;
-    private final MenuUI menuUI = new MenuUI();
-    private final ServerFacade serverFacade;
-    private final ChessBoardUI boardUI = new ChessBoardUI(new ChessGame().getBoard().getBoardMatrix(), ChessGame.TeamColor.WHITE);
-    private final Map<Integer, Integer> gameMapping = new HashMap<>();
 
-    public ChessClient(String url) {
+    private final MenuUI menuUI = new MenuUI();
+    private final ChessBoardUI boardUI = new ChessBoardUI(new ChessGame().getBoard().getBoardMatrix(), ChessGame.TeamColor.WHITE);
+
+    private final ServerFacade serverFacade;
+//    private final WebSocketFacade webSocketFacade;
+
+    private final Map<Integer, Integer> gameMapping = new HashMap<>();
+    private String authToken;
+
+    private ClientState state = ClientState.LOGGED_OUT;
+
+    public ChessClient(String url) throws IOException {
         serverFacade = new ServerFacade(url);
+//        webSocketFacade = new WebSocketFacade(url);
     }
 
     void eval(String input) {
@@ -32,32 +41,50 @@ public class ChessClient {
         String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
 
         if (authToken == null) {
-            switch (cmd) {
-                case "help" -> help();
-                case "quit" -> quit();
-                case "login" -> login(params);
-                case "register" -> register(params);
-                default -> handleInvalidCommand();
-            }
+            processLoggedOutCommand(cmd, params);
         } else {
-            switch (cmd) {
-                case "help" -> help();
-                case "quit" -> quit();
-                case "logout" -> logout();
-                case "create" -> createGame(params);
-                case "list" -> listGames();
-                case "join" -> playGame(params);
-                case "observe" -> observeGame(params);
-                default -> handleInvalidCommand();
-            }
+            processLoggedInCommand(cmd, params);
         }
     }
 
-    public void printPrompt() {
-        String prompt = "[LOGGED_OUT] >>> ";
-        if (authToken != null) {
-            prompt = "[LOGGED_IN] >>> ";
+    private void processLoggedOutCommand(String cmd, String[] params) {
+        switch (cmd) {
+            case "help" -> help();
+            case "quit" -> quit();
+            case "login" -> login(params);
+            case "register" -> register(params);
+            default -> MessagePresenter.handleInvalidCommand();
         }
+    }
+
+    private void processLoggedInCommand(String cmd, String[] params) {
+        switch (cmd) {
+            case "help" -> help();
+            case "quit" -> quit();
+            case "logout" -> logout();
+            case "create" -> createGame(params);
+            case "list" -> listGames();
+            case "join" -> playGame(params);
+            case "observe" -> observeGame(params);
+            default -> MessagePresenter.handleInvalidCommand();
+        }
+    }
+
+    private void processObservingCommand(String cmd, String[] params) {
+
+    }
+
+    private void processInGameCommand(String cmd, String[] params) {
+
+    }
+
+    void printPrompt() {
+        String prompt = switch (state) {
+            case LOGGED_OUT -> "[LOGGED_OUT] >>> ";
+            case LOGGED_IN -> "[LOGGED_IN] >>> ";
+            default -> "not implemented";
+        };
+
 
         System.out.print(SET_TEXT_COLOR_LIGHT_GREY);
         System.out.print(prompt);
@@ -79,7 +106,7 @@ public class ChessClient {
     }
 
     private void login(String[] params) {
-        printStatusMessage("Logging you in...");
+        MessagePresenter.printStatusMessage("Logging you in...");
 
         try {
             if (params.length < 2) {
@@ -87,26 +114,23 @@ public class ChessClient {
             }
 
             String token = serverFacade.login(params[0], params[1]);
-            setLoggedInState(token);
+            setState(ClientState.LOGGED_IN, token);
 
         } catch (InvalidParamsException | IOException e) {
-            handleError(e.getMessage());
+            MessagePresenter.handleError(e.getMessage());
         }
     }
 
-    private void setLoggedInState(String authToken) {
-        printSuccessMessage("Success!");
+    private void setState(ClientState state, String authToken) {
+        MessagePresenter.printSuccessMessage("Success!");
 
         this.authToken = authToken;
-        menuUI.setState("logged_in");
-        help();
+        this.setState(state);
     }
 
-    private void setLoggedOutState() {
-        printSuccessMessage("Success!");
-
-        this.authToken = null;
-        menuUI.setState("logged_out");
+    private void setState(ClientState state) {
+        this.state = state;
+        menuUI.setState(state);
     }
 
     private void register(String[] params) {
@@ -114,12 +138,12 @@ public class ChessClient {
             if (params.length < 3) {
                 throw new InvalidParamsException("Username, password, and email are required for registering.");
             } else {
-                printStatusMessage("Processing your registration...");
+                MessagePresenter.printStatusMessage("Processing your registration...");
                 String token = serverFacade.register(params[0], params[1], params[2]);
-                setLoggedInState(token);
+                setState(ClientState.LOGGED_IN, token);
             }
         } catch (InvalidParamsException | IOException e) {
-            handleError(e.getMessage());
+            MessagePresenter.handleError(e.getMessage());
         }
 
 
@@ -128,13 +152,13 @@ public class ChessClient {
     // Post-login commands
 
     private void logout() {
-        printStatusMessage("Logging you out...");
+        MessagePresenter.printStatusMessage("Logging you out...");
 
         try {
             serverFacade.logout(authToken);
-            setLoggedOutState();
+            setState(ClientState.LOGGED_OUT, null);
         } catch (IOException e) {
-            handleError(e.getMessage());
+            MessagePresenter.handleError(e.getMessage());
         }
     }
 
@@ -143,14 +167,14 @@ public class ChessClient {
             if (params.length < 1) {
                 throw new InvalidParamsException("Game name is required");
             }
-            printStatusMessage("Creating game...");
+            MessagePresenter.printStatusMessage("Creating game...");
 
             String gameName = String.join(" ", params);
 
             serverFacade.createGame(authToken, gameName);
-            printSuccessMessage(gameName + " successfully created!");
+            MessagePresenter.printSuccessMessage(gameName + " successfully created!");
         } catch (IOException | InvalidParamsException e) {
-            handleError(e.getMessage());
+            MessagePresenter.handleError(e.getMessage());
         }
     }
 
@@ -167,7 +191,7 @@ public class ChessClient {
                 count ++;
             }
         } catch (IOException e) {
-            handleError(e.getMessage());
+            MessagePresenter.handleError(e.getMessage());
         }
     }
 
@@ -196,7 +220,7 @@ public class ChessClient {
             System.out.println(boardUI);
 
         } catch (IOException | InvalidParamsException e) {
-            handleError(e.getMessage());
+            MessagePresenter.handleError(e.getMessage());
         }
 
     }
@@ -204,33 +228,5 @@ public class ChessClient {
     private void observeGame(String[] params) {
         boardUI.setPlayerTeam(ChessGame.TeamColor.WHITE);
         System.out.println(boardUI);
-        boardUI.setPlayerTeam(ChessGame.TeamColor.BLACK);
-        System.out.println(boardUI);
     }
-
-    private void handleInvalidCommand() {
-        handleError("Command entered is not recognized, please enter a valid command");
-        help();
-    }
-
-    private void handleError(String message) {
-        printColoredMessage(message + ", please try again.", SET_TEXT_COLOR_RED);
-    }
-
-    private void printSuccessMessage(String message) {
-        printColoredMessage(message, SET_TEXT_COLOR_GREEN);
-    }
-
-    private void printStatusMessage(String message) {
-        printColoredMessage(message, SET_TEXT_COLOR_WHITE);
-    }
-
-    private void printColoredMessage(String message, String color) {
-        System.out.println(
-                color +
-                message +
-                RESET_TEXT_COLOR
-        );
-    }
-
 }
