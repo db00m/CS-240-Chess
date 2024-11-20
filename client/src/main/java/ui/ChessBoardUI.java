@@ -11,8 +11,8 @@ import static ui.EscapeSequences.*;
 public class ChessBoardUI {
 
     private static final String BLACK_BOARDER_SQUARE = square(SET_BG_COLOR_LIGHT_GREY, EMPTY);
-    private static final String[] COLUMNS = { " H ", " G ", " F ", " E ", " D ", " C ", " B ", " A " };
-    private static final String[] ROWS = { " 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 " };
+    private static final String[] COLUMNS = { " A ", " B ", " C ", " D ", " E ", " F ", " G ", " H " };
+    private static final String[] ROWS = { " 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 " };
 
     private final static Map<ChessPiece.PieceType, String> WHITE_PIECE_MAPPING = Map.of(
             ChessPiece.PieceType.PAWN, WHITE_PAWN,

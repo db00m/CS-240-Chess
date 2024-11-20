@@ -202,6 +202,9 @@ public class ChessClient {
     }
 
     private void observeGame(String[] params) {
+        boardUI.setPlayerTeam(ChessGame.TeamColor.WHITE);
+        System.out.println(boardUI);
+        boardUI.setPlayerTeam(ChessGame.TeamColor.BLACK);
         System.out.println(boardUI);
     }
 

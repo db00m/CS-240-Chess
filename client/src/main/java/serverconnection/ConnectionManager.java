@@ -15,7 +15,6 @@ public class ConnectionManager {
     }
 
 
-
     public String doGet(String path, Map<String, String> headers) throws IOException, HTTPResponseException {
         return doRequestWithoutBody(path, headers, "GET");
     }
