@@ -2,14 +2,19 @@ package ui;
 
 import static ui.EscapeSequences.*;
 import client.ClientState;
+import client.StateManager;
 
 public class MenuUI {
 
-    ClientState state = ClientState.LOGGED_OUT;
+    StateManager stateManager;
+
+    public MenuUI(StateManager stateManager) {
+        this.stateManager = stateManager;
+    }
 
     @Override
     public String toString() {
-        return switch (state) {
+        return switch (stateManager.getCurrentState()) {
             case LOGGED_OUT -> loggedOutMenu();
             case LOGGED_IN -> loggedInMenu();
             default -> "not implemented";
@@ -40,9 +45,5 @@ public class MenuUI {
                 commandName +
                 SET_TEXT_COLOR_MAGENTA +
                 " -- " + commandDetails + "\n";
-    }
-
-    public void setState(ClientState newState) {
-        this.state = newState;
     }
 }

@@ -19,15 +19,11 @@ public class Repl {
 
         client.help();
         do {
-            client.printPrompt();
+            System.out.print(client.getPrompt());
 
             result = scanner.nextLine();
             client.eval(result);
 
         } while (!Objects.equals(result, "quit"));
-    }
-
-    private void printPrompt() {
-        System.out.print("");
     }
 }
