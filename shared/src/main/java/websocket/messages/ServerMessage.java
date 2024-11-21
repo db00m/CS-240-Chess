@@ -33,6 +33,10 @@ public class ServerMessage {
         return this.serverMessageType;
     }
 
+    public ChessGame getChessGame() {
+        return chessGame;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

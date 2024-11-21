@@ -1,5 +1,6 @@
 package serverconnection;
 
+import notifications.NotificationHandler;
 import serialize.ObjectSerializer;
 import websocket.commands.UserGameCommand.CommandType;
 import websocket.commands.UserGameCommand;
@@ -17,7 +18,7 @@ public class WebSocketConnectionManager extends Endpoint {
 
     public static void main(String [] args) throws IOException {
         var con = new WebSocketConnectionManager("ws://localhost:8080");
-        con.openSocket();
+        con.openSocket(new NotificationHandler());
         UserGameCommand command = new UserGameCommand(CommandType.CONNECT, "2fbf4eea-12e5-4bce-a5ef-076ecfebd213", 484);
         con.sendMessage(new ObjectSerializer().toJson(command));
         while (true) {}
@@ -32,14 +33,14 @@ public class WebSocketConnectionManager extends Endpoint {
         }
     }
 
-    public void openSocket() throws IOException {
+    public void openSocket(NotificationHandler handler) throws IOException {
         try {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, uri);
 
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 public void onMessage(String message) {
-                    System.out.println(message);
+                    handler.notify(message);
                 }
             });
         } catch (DeploymentException e) {
