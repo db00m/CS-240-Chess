@@ -5,7 +5,7 @@ import models.ChessGameModel;
 import requests.*;
 import responses.*;
 import serialize.ObjectSerializer;
-import serverconnection.ConnectionManager;
+import serverconnection.HTTPConnectionManager;
 import serverconnection.HTTPResponseException;
 
 import java.io.IOException;
@@ -15,11 +15,11 @@ import java.util.Map;
 
 
 public class ServerFacade {
-    ConnectionManager connectionManager;
+    HTTPConnectionManager connectionManager;
     ObjectSerializer serializer = new ObjectSerializer();
 
     public ServerFacade(String urlString) {
-        connectionManager = new ConnectionManager(urlString);
+        connectionManager = new HTTPConnectionManager(urlString);
     }
 
     public String register(String username, String password, String email) throws IOException {

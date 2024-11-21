@@ -1,18 +1,26 @@
 package models;
 
+import chess.ChessGame;
+
 import java.util.Objects;
 
 public class ChessGameModel {
     private final int gameID;
     private final String gameName;
+    private ChessGame game;
     private String whiteUsername;
     private String blackUsername;
 
-    public ChessGameModel(int gameID, String gameName, String whiteUsername, String blackUsername) {
+    public ChessGameModel(int gameID, String gameName, ChessGame game, String whiteUsername, String blackUsername) {
         this.gameID = gameID;
         this.gameName = gameName;
+        this.game = game;
         this.whiteUsername = whiteUsername;
         this.blackUsername = blackUsername;
+    }
+
+    public ChessGameModel(int gameID, String gameName, String whiteUsername, String blackUsername) {
+        this(gameID, gameName, null, whiteUsername, blackUsername);
     }
 
     public ChessGameModel(int gameID, String gameName) {
@@ -34,6 +42,10 @@ public class ChessGameModel {
 
     public String getGameName() {
         return gameName;
+    }
+
+    public ChessGame getGame() {
+        return game;
     }
 
     public String getWhiteUsername() {

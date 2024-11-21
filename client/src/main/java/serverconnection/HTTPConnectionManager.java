@@ -1,16 +1,14 @@
 package serverconnection;
 
-import responses.BasicResponse;
-
 import java.io.*;
 import java.net.*;
 import java.util.Map;
 
-public class ConnectionManager {
+public class HTTPConnectionManager {
     String root;
 
 
-    public ConnectionManager(String rootURLString) {
+    public HTTPConnectionManager(String rootURLString) {
         this.root = rootURLString;
     }
 
@@ -23,15 +21,13 @@ public class ConnectionManager {
         return doRequestWithBody(path, postBody, headers, "POST");
     }
 
-    public String doPut(String path, String putBody, Map<String, String> headers) throws IOException, HTTPResponseException {
-        return doRequestWithBody(path, putBody, headers, "PUT");
+    public void doPut(String path, String putBody, Map<String, String> headers) throws IOException, HTTPResponseException {
+        doRequestWithBody(path, putBody, headers, "PUT");
     }
 
     public void doDelete(String path, Map<String, String> headers) throws IOException, HTTPResponseException {
         doRequestWithoutBody(path, headers, "DELETE");
     }
-
-
 
     private String doRequestWithoutBody(String path, Map<String, String> headers, String method) throws IOException, HTTPResponseException {
         HttpURLConnection connection = getConnection(path);

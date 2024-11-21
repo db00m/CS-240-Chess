@@ -61,6 +61,7 @@ public class SQLChessGameDAO implements ChessGameDAO {
                 SELECT
                     chess_games.id,
                     chess_games.name,
+                    chess_games.game_data,
                     white_user.username as white_username,
                     black_user.username as black_username
                 FROM

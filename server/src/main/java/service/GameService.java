@@ -33,6 +33,10 @@ public class GameService {
         }
     }
 
+    public ChessGameModel getGame(int gameId) throws DataAccessException {
+        return chessGameDAO.getById(gameId);
+    }
+
     private void setBlackPlayer(UserModel user, ChessGameModel game) throws ValidationException {
         if (game.getBlackUsername() != null) {
             throw new ValidationException("selected team already has a player assigned");
