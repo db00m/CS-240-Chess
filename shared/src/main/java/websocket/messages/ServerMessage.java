@@ -12,7 +12,9 @@ import java.util.Objects;
  */
 public class ServerMessage {
     ServerMessageType serverMessageType;
-    ChessGame chessGame;
+    String message;
+    String errorMessage;
+    ChessGame game;
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -24,17 +26,31 @@ public class ServerMessage {
         this.serverMessageType = type;
     }
 
+    public ServerMessage(ServerMessageType type, String message) {
+        this(type, null, message);
+    }
+
+    public ServerMessage(Exception exception) {
+        this(ServerMessageType.ERROR);
+        this.errorMessage = exception.getMessage();
+    }
+
     public ServerMessage(ServerMessageType type, ChessGame game) {
+        this(type, game, null);
+    }
+
+    public ServerMessage(ServerMessageType type, ChessGame game, String message) {
         this(type);
-        this.chessGame = game;
+        this.game = game;
+        this.message = message;
     }
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
     }
 
-    public ChessGame getChessGame() {
-        return chessGame;
+    public ChessGame getGame() {
+        return game;
     }
 
     @Override

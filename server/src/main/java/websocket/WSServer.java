@@ -10,6 +10,7 @@ import service.UnauthorizedException;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,12 +29,15 @@ public class WSServer {
         UserGameCommand command = serializer.fromJson(message, UserGameCommand.class);
         try {
             UserModel user = AuthorizationService.authorize(command.getAuthToken());
-            ServerMessage serverMessage = processor.eval(command);
-            session.getRemote().sendString(serializer.toJson(serverMessage));
+            processor.eval(command, user.username(), session);
 
         } catch (UnauthorizedException | DataAccessException e) {
-            session.getRemote().sendString(e.getMessage());
+            handleException(e, session);
         }
 
+    }
+
+    public void handleException(Exception e, Session session) throws IOException {
+        session.getRemote().sendString(serializer.toJson(new ServerMessage(e)));
     }
 }
