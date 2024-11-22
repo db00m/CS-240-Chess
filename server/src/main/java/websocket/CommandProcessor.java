@@ -1,14 +1,10 @@
 package websocket;
 
-import chess.ChessGame;
 import dataaccess.DataAccessException;
 import models.ChessGameModel;
-import models.UserModel;
 import org.eclipse.jetty.websocket.api.Session;
-import serialize.ObjectSerializer;
 import service.GameService;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.*;
@@ -17,7 +13,7 @@ public class CommandProcessor {
 
     GameService gameService = new GameService();
     Map<Integer, Set<Session>> sessions = new HashMap<>();
-    ObjectSerializer serializer = new ObjectSerializer();
+    MessageSender sender = new MessageSender();
 
     public CommandProcessor() throws DataAccessException {
     }
@@ -35,27 +31,10 @@ public class CommandProcessor {
         ChessGameModel gameModel = gameService.getGame(command.getGameID());
         String callerRole = gameModel.getUserRoll(username);
 
-        var notification = new ServerMessage(
-                ServerMessage.ServerMessageType.NOTIFICATION,
-                null,
-                username + " joined game as " + callerRole
-        );
-
         Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
         gameMembers.add(session);
-        for (Session memberSession : gameMembers) {
-            if (memberSession != session) {
-                memberSession.getRemote().sendString(serializer.toJson(notification));
-            }
-        }
-
-        var loadMessage = new ServerMessage(
-                ServerMessage.ServerMessageType.LOAD_GAME,
-                gameModel.getGame(),
-                null
-        );
-
-        session.getRemote().sendString(serializer.toJson(loadMessage));
+        sender.sendLoadGameNotification(session, gameModel.getGame());
+        sender.sendGroupNotification(session, gameMembers, username + " has joined as " + callerRole);
     }
 
     private Set<Session> getConnectedSessions(int gameId, Session session) {
