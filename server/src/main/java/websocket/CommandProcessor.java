@@ -1,5 +1,7 @@
 package websocket;
 
+import chess.ChessGame;
+import chess.InvalidMoveException;
 import dataaccess.DataAccessException;
 import models.ChessGameModel;
 import org.eclipse.jetty.websocket.api.Session;
@@ -18,27 +20,48 @@ public class CommandProcessor {
     public CommandProcessor() throws DataAccessException {
     }
 
-    public void eval(UserGameCommand command, String username, Session session) throws DataAccessException, IOException {
+    public void eval(UserGameCommand command, String username, Session session) throws DataAccessException, IOException, InvalidMoveException {
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, username, session);
-//            case MAKE_MOVE -> null;
+            case MAKE_MOVE -> makeMove(command, username, session);
 //            case LEAVE -> null;
 //            case RESIGN -> null;
         };
     }
 
-    private void connect(UserGameCommand command, String username, Session session) throws DataAccessException, IOException {
-        ChessGameModel gameModel = gameService.getGame(command.getGameID());
+    private void connect(UserGameCommand command, String username, Session session)
+            throws DataAccessException, IOException {
+        ChessGameModel gameModel = getGameModel(command.getGameID());
         String callerRole = gameModel.getUserRoll(username);
 
         Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
         gameMembers.add(session);
-        sender.sendLoadGameNotification(session, gameModel.getGame());
+        sender.loadGameForOne(session, gameModel.getGame());
         sender.sendGroupNotification(session, gameMembers, username + " has joined as " + callerRole);
+    }
+
+    private void makeMove(UserGameCommand command, String username, Session session)
+            throws DataAccessException, IOException, InvalidMoveException {
+        ChessGameModel gameModel = getGameModel(command.getGameID());
+        ChessGame game = gameModel.getGame();
+
+        if (game.getTeamTurn() != gameModel.getUserTeam(username)) {
+            throw new InvalidMoveException("It is not your turn.");
+        }
+
+        game.makeMove(command.getMove());
+
+        Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
+        sender.loadGameForAll(gameMembers, game);
+        sender.sendGroupNotification(session, gameMembers, username + " moved.");
     }
 
     private Set<Session> getConnectedSessions(int gameId, Session session) {
         return sessions.computeIfAbsent(gameId, k -> new HashSet<>());
+    }
+
+    private ChessGameModel getGameModel(int gameID) throws DataAccessException {
+        return gameService.getGame(gameID);
     }
 
 

@@ -12,13 +12,19 @@ public class MessageSender {
 
     ObjectSerializer serializer = new ObjectSerializer();
 
-    public void sendLoadGameNotification(Session session, ChessGame game) throws IOException {
+    public void loadGameForOne(Session session, ChessGame game) throws IOException {
         var loadMessage = new ServerMessage(
                 ServerMessage.ServerMessageType.LOAD_GAME,
                 game
         );
 
         session.getRemote().sendString(serializer.toJson(loadMessage));
+    }
+
+    public void loadGameForAll(Collection<Session> allSessions, ChessGame game) throws IOException {
+        for (Session session : allSessions) {
+            loadGameForOne(session, game);
+        }
     }
 
     public void sendGroupNotification(Session callerSession, Collection<Session> otherSessions, String message) throws IOException {

@@ -66,6 +66,16 @@ public class ChessGameModel {
         return "Observer";
     }
 
+    public ChessGame.TeamColor getUserTeam(String username) {
+        if (whiteUsername.equals(username)) {
+            return ChessGame.TeamColor.WHITE;
+        } else if (blackUsername.equals(username)) {
+            return ChessGame.TeamColor.BLACK;
+        }
+
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

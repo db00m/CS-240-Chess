@@ -176,13 +176,13 @@ public class ChessGame {
                 || (!pieceToMove.pieceMoves(board, move.startPosition()).contains(move)
                 && !isEnPassant(move)
                 && !isCastle(move))) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Move is invalid");
         }
 
         ChessBoard newBoard = testMove(move);
 
         if (newBoard == null) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Move is invalid");
         }
         setBoard(newBoard);
         lastMoveMade = move;

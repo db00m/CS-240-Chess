@@ -1,5 +1,6 @@
 package websocket;
 
+import chess.InvalidMoveException;
 import dataaccess.DataAccessException;
 import models.UserModel;
 import org.eclipse.jetty.websocket.api.annotations.*;
@@ -25,13 +26,13 @@ public class WSServer {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws Exception {
+    public void onMessage(Session session, String message) throws IOException {
         UserGameCommand command = serializer.fromJson(message, UserGameCommand.class);
         try {
             UserModel user = AuthorizationService.authorize(command.getAuthToken());
             processor.eval(command, user.username(), session);
 
-        } catch (UnauthorizedException | DataAccessException e) {
+        } catch (UnauthorizedException | DataAccessException | InvalidMoveException e) {
             handleException(e, session);
         }
 
