@@ -118,6 +118,7 @@ public class SQLChessGameDAO implements ChessGameDAO {
         try (var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.setString(1, serializer.toJson(gameModel.getGame()));
             preparedStatement.setInt(2, gameModel.getID());
+            preparedStatement.executeUpdate();
         } catch (SQLException exc) {
             throw new RuntimeException(exc);
         }
