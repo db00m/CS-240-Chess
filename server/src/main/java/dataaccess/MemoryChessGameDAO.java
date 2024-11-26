@@ -40,6 +40,11 @@ public class MemoryChessGameDAO implements ChessGameDAO {
     }
 
     @Override
+    public void updateGame(ChessGameModel game) {
+
+    }
+
+    @Override
     public Collection<ChessGameModel> getAll() {
         return GAMES_TABLE.values();
     }

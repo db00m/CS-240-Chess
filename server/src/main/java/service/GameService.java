@@ -33,6 +33,10 @@ public class GameService {
         }
     }
 
+    public void updateGame(ChessGameModel gameModel) {
+        chessGameDAO.updateGame(gameModel);
+    }
+
     public ChessGameModel getGame(int gameId) throws DataAccessException {
         return chessGameDAO.getById(gameId);
     }

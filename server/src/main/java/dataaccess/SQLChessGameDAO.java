@@ -11,6 +11,7 @@ import java.util.*;
 public class SQLChessGameDAO implements ChessGameDAO {
 
     private final Connection conn;
+    private final ObjectSerializer serializer = new ObjectSerializer();
 
     //language=MySQL
     public static final String CREATE_TABLE = """
@@ -19,7 +20,7 @@ public class SQLChessGameDAO implements ChessGameDAO {
                 name VARCHAR(255) NOT NULL,
                 white_user_id INT,
                 black_user_id INT,
-                game_data VARCHAR(5000),
+                game_data TEXT,
                 PRIMARY KEY (id),
                 FOREIGN KEY (white_user_id) REFERENCES users(id),
                 FOREIGN KEY (black_user_id) REFERENCES users(id)
@@ -36,7 +37,6 @@ public class SQLChessGameDAO implements ChessGameDAO {
 
     @Override
     public int add(String gameName) throws DataAccessException {
-        var serializer = new ObjectSerializer();
         String gameData = serializer.toJson(new ChessGame());
         var statement = "INSERT INTO chess_games (name, game_data) VALUES (?, ?)";
 
@@ -105,6 +105,19 @@ public class SQLChessGameDAO implements ChessGameDAO {
             preparedStatement.setInt(1, user.id());
             preparedStatement.setInt(2, game.getID());
             preparedStatement.executeUpdate();
+        } catch (SQLException exc) {
+            throw new RuntimeException(exc);
+        }
+    }
+
+    @Override
+    public void updateGame(ChessGameModel gameModel) {
+        var statement = """
+                UPDATE chess_games SET game_data = ? WHERE id = ?
+                """;
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, serializer.toJson(gameModel.getGame()));
+            preparedStatement.setInt(2, gameModel.getID());
         } catch (SQLException exc) {
             throw new RuntimeException(exc);
         }

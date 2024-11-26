@@ -10,14 +10,16 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 public interface ChessGameDAO {
-    public int add(String gameName) throws DataAccessException;
-    public ChessGameModel getById(int id) throws DataAccessException;
-    public void setBlackUser(ChessGameModel game, UserModel user);
-    public void setWhiteUser(ChessGameModel game, UserModel user);
-    public Collection<ChessGameModel> getAll();
-    public void clear();
+    int add(String gameName) throws DataAccessException;
+    ChessGameModel getById(int id) throws DataAccessException;
+    void setBlackUser(ChessGameModel game, UserModel user);
+    void setWhiteUser(ChessGameModel game, UserModel user);
+    void updateGame(ChessGameModel game);
+    Collection<ChessGameModel> getAll();
+    void clear();
 
-    public static ChessGameModel getChessGame(PreparedStatement preparedQuery) throws SQLException {
+
+    static ChessGameModel getChessGame(PreparedStatement preparedQuery) throws SQLException {
         var serializer = new ObjectSerializer();
 
         try (var rs = preparedQuery.executeQuery()) {

@@ -50,6 +50,7 @@ public class CommandProcessor {
         }
 
         game.makeMove(command.getMove());
+        gameService.updateGame(gameModel);
 
         Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
         sender.loadGameForAll(gameMembers, game);
