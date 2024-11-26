@@ -45,6 +45,8 @@ public class CommandProcessor {
         ChessGameModel gameModel = getGameModel(command.getGameID());
         ChessGame game = gameModel.getGame();
 
+        checkPlayerPresence(gameModel);
+
         if (game.getTeamTurn() != gameModel.getUserTeam(username)) {
             throw new InvalidMoveException("It is not your turn.");
         }
@@ -59,6 +61,9 @@ public class CommandProcessor {
 
     private void resign(UserGameCommand command, String username, Session session) throws DataAccessException, IOException, InvalidMoveException {
         ChessGameModel gameModel = getGameModel(command.getGameID());
+
+        checkPlayerPresence(gameModel);
+
         switch (gameModel.getUserRoll(username)) {
             case "White" -> gameModel.setWhiteUsername(null);
             case "Black" -> gameModel.setBlackUsername(null);
@@ -68,7 +73,7 @@ public class CommandProcessor {
         gameService.updateGame(gameModel);
 
         Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
-        sender.sendGroupNotification(null, gameMembers, username + "resigned from the game");
+        sender.sendGroupNotification(null, gameMembers, username + " resigned from the game");
         gameMembers.remove(session);
     }
 
@@ -80,5 +85,10 @@ public class CommandProcessor {
         return gameService.getGame(gameID);
     }
 
+    private void checkPlayerPresence(ChessGameModel gameModel) throws InvalidMoveException {
+        if (gameModel.getWhiteUsername() == null || gameModel.getBlackUsername() == null) {
+            throw new InvalidMoveException("Both player need to be present");
+        }
+    }
 
 }
