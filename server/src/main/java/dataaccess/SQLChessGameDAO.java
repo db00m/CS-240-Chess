@@ -113,11 +113,19 @@ public class SQLChessGameDAO implements ChessGameDAO {
     @Override
     public void updateGame(ChessGameModel gameModel) {
         var statement = """
-                UPDATE chess_games SET game_data = ? WHERE id = ?
+                UPDATE chess_games
+                JOIN users white_user ON chess_games.white_user_id = white_user.id
+                JOIN users black_user ON chess_games.black_user_id = black_user.id
+                SET chess_games.white_user_id = (SELECT id FROM users WHERE username = ?),
+                    chess_games.black_user_id = (SELECT id FROM users WHERE username = ?),
+                    chess_games.game_data = ?
+                WHERE chess_games.id = ?;
                 """;
         try (var preparedStatement = conn.prepareStatement(statement)) {
-            preparedStatement.setString(1, serializer.toJson(gameModel.getGame()));
-            preparedStatement.setInt(2, gameModel.getID());
+            preparedStatement.setString(1, gameModel.getWhiteUsername());
+            preparedStatement.setString(2, gameModel.getBlackUsername());
+            preparedStatement.setString(3, serializer.toJson(gameModel.getGame()));
+            preparedStatement.setInt(4, gameModel.getID());
             preparedStatement.executeUpdate();
         } catch (SQLException exc) {
             throw new RuntimeException(exc);

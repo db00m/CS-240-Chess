@@ -25,7 +25,7 @@ public class CommandProcessor {
             case CONNECT -> connect(command, username, session);
             case MAKE_MOVE -> makeMove(command, username, session);
 //            case LEAVE -> null;
-//            case RESIGN -> null;
+            case RESIGN -> resign(command, username, session);
         };
     }
 
@@ -55,6 +55,21 @@ public class CommandProcessor {
         Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
         sender.loadGameForAll(gameMembers, game);
         sender.sendGroupNotification(session, gameMembers, username + " moved.");
+    }
+
+    private void resign(UserGameCommand command, String username, Session session) throws DataAccessException, IOException, InvalidMoveException {
+        ChessGameModel gameModel = getGameModel(command.getGameID());
+        switch (gameModel.getUserRoll(username)) {
+            case "White" -> gameModel.setWhiteUsername(null);
+            case "Black" -> gameModel.setBlackUsername(null);
+            default -> throw new InvalidMoveException("Not a player");
+        }
+
+        gameService.updateGame(gameModel);
+
+        Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
+        sender.sendGroupNotification(null, gameMembers, username + "resigned from the game");
+        gameMembers.remove(session);
     }
 
     private Set<Session> getConnectedSessions(int gameId, Session session) {
