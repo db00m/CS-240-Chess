@@ -82,7 +82,7 @@ class SQLChessGameDAOTest {
     @Test
     void setWhiteUserWhenGameExists()  {
         UserModel white = addAndGetUser("white");
-        assertDoesNotThrow(() -> gameDAO.setBlackUser(addAndGetGame(), white));
+        assertDoesNotThrow(() -> gameDAO.setWhiteUser(addAndGetGame(), white));
     }
 
     @Test
@@ -140,7 +140,7 @@ class SQLChessGameDAOTest {
     private ChessGameModel getExistingGame() {
         var statement = """
                 SELECT
-                    chess_games.id, name, white.username AS white_username, black.username AS black_username
+                    chess_games.id, name, game_data, white.username AS white_username, black.username AS black_username
                 FROM
                     chess_games
                 LEFT JOIN

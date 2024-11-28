@@ -114,8 +114,6 @@ public class SQLChessGameDAO implements ChessGameDAO {
     public void updateGame(ChessGameModel gameModel) {
         var statement = """
                 UPDATE chess_games
-                JOIN users white_user ON chess_games.white_user_id = white_user.id
-                JOIN users black_user ON chess_games.black_user_id = black_user.id
                 SET chess_games.white_user_id = (SELECT id FROM users WHERE username = ?),
                     chess_games.black_user_id = (SELECT id FROM users WHERE username = ?),
                     chess_games.game_data = ?

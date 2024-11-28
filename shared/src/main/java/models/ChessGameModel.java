@@ -57,9 +57,9 @@ public class ChessGameModel {
     }
 
     public String getUserRoll(String username) {
-        if (whiteUsername.equals(username)) {
+        if (username.equals(whiteUsername)) {
             return "White";
-        } else if (blackUsername.equals(username)) {
+        } else if (username.equals(blackUsername)) {
             return "Black";
         }
 

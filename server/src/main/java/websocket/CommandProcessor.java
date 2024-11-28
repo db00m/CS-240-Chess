@@ -24,7 +24,7 @@ public class CommandProcessor {
         switch (command.getCommandType()) {
             case CONNECT -> connect(command, username, session);
             case MAKE_MOVE -> makeMove(command, username, session);
-//            case LEAVE -> null;
+            case LEAVE -> leave(command, username, session);
             case RESIGN -> resign(command, username, session);
         };
     }
@@ -74,6 +74,24 @@ public class CommandProcessor {
 
         Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
         sender.sendGroupNotification(null, gameMembers, username + " resigned from the game");
+        gameMembers.remove(session);
+    }
+
+    private void leave(UserGameCommand command, String username, Session session) throws DataAccessException, IOException {
+        ChessGameModel gameModel = getGameModel(command.getGameID());
+
+//        String userRoll = gameModel.getUserRoll(username);
+
+        if ("White".equals(gameModel.getUserRoll(username))) {
+            gameModel.setWhiteUsername(null);
+        } else if ("Black".equals(gameModel.getUserRoll(username))) {
+            gameModel.setBlackUsername(null);
+        }
+
+        gameService.updateGame(gameModel);
+
+        Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
+        sender.sendGroupNotification(session, gameMembers, username + " left the game");
         gameMembers.remove(session);
     }
 
