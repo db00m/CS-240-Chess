@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import commandprocessing.InGameCommandProcessor;
 import commandprocessing.LoggedInCommandProcessor;
 import commandprocessing.LoggedOutCommandProcessor;
 import ui.ChessBoardUI;
@@ -30,10 +31,11 @@ public class ChessClient {
 
     private final LoggedInCommandProcessor loggedInProcessor;
     private final LoggedOutCommandProcessor loggedOutProcessor;
+    private final InGameCommandProcessor inGameCommandProcessor;
 
     public ChessClient(String url) throws IOException {
-        ServerFacade serverFacade = new ServerFacade(url);
-        //        webSocketFacade = new WebSocketFacade(url);
+        var serverFacade = new ServerFacade("http://" + url);
+        var webSocketFacade = new WebSocketFacade("ws://" + url);
 
         stateManager = new StateManager(ClientState.LOGGED_OUT);
         menuUI = new MenuUI(stateManager);
@@ -42,8 +44,9 @@ public class ChessClient {
         var initialBoardMatrix = new ChessGame().getBoard().getBoardMatrix();
         boardUI = new ChessBoardUI(initialBoardMatrix, ChessGame.TeamColor.WHITE);
 
-        loggedInProcessor = new LoggedInCommandProcessor(serverFacade, stateManager);
+        loggedInProcessor = new LoggedInCommandProcessor(serverFacade, webSocketFacade, stateManager);
         loggedOutProcessor = new LoggedOutCommandProcessor(serverFacade, stateManager);
+        inGameCommandProcessor = new InGameCommandProcessor(webSocketFacade, stateManager);
     }
 
     void eval(String input) {
@@ -62,6 +65,7 @@ public class ChessClient {
         switch (stateManager.getCurrentState()) {
             case LOGGED_OUT -> loggedOutProcessor.process(cmd, params);
             case LOGGED_IN -> loggedInProcessor.process(cmd, params);
+            case IN_GAME, OBSERVING -> inGameCommandProcessor.process(cmd, params);
         }
     }
 

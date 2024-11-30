@@ -1,10 +1,7 @@
 package commandprocessing;
 
 import chess.ChessGame;
-import client.ClientState;
-import client.InvalidParamsException;
-import client.ServerFacade;
-import client.StateManager;
+import client.*;
 import models.ChessGameModel;
 import ui.MessagePresenter;
 
@@ -17,12 +14,14 @@ public class LoggedInCommandProcessor {
 
     private final ServerFacade serverFacade;
     private final StateManager stateManager;
+    private final WebSocketFacade webSocketFacade;
 
     private final Map<Integer, Integer> gameMapping = new HashMap<>();
 
-    public LoggedInCommandProcessor(ServerFacade serverFacade, StateManager stateManager) {
+    public LoggedInCommandProcessor(ServerFacade serverFacade, WebSocketFacade webSocketFacade, StateManager stateManager) {
         this.serverFacade = serverFacade;
         this.stateManager = stateManager;
+        this.webSocketFacade = webSocketFacade;
     }
 
     public void process(String cmd, String[] params) {
@@ -100,9 +99,7 @@ public class LoggedInCommandProcessor {
             }
 
             serverFacade.joinGame(stateManager.getAuthToken(), color, gameID);
-
-//            TODO: Connect to websocket here, board will render with notification from WS
-
+            webSocketFacade.connect(stateManager.getAuthToken(), gameID);
 
         } catch (IOException | InvalidParamsException e) {
             MessagePresenter.handleError(e.getMessage());
