@@ -17,7 +17,8 @@ public class MenuUI {
         return switch (stateManager.getCurrentState()) {
             case LOGGED_OUT -> loggedOutMenu();
             case LOGGED_IN -> loggedInMenu();
-            default -> "not implemented";
+            case IN_GAME -> inGameMenu();
+            case OBSERVING -> observingMenu();
         };
     }
 
@@ -35,6 +36,22 @@ public class MenuUI {
                 menuItem("observe <ID>", "a game") +
                 menuItem("quit", "to exit") +
                 menuItem("logout", "to login to a different account") +
+                menuItem("help", "to show possible commands");
+    }
+
+    private String inGameMenu() {
+        return menuItem("move <START_POSITION> <END_POSITION>", "a piece") +
+                menuItem("redraw", "the game board") +
+                menuItem("highlight <PIECE_POSITION>", "the possible moves of a piece") +
+                menuItem("resign", "from the game") +
+                menuItem("leave", "the game") +
+                menuItem("help", "to show possible commands");
+    }
+
+    private String observingMenu() {
+        return menuItem("redraw", "the game board") +
+                menuItem("highlight <PIECE_POSITION>", "the possible moves of a piece") +
+                menuItem("leave", "the game") +
                 menuItem("help", "to show possible commands");
     }
 
