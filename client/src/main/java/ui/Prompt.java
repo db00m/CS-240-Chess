@@ -18,8 +18,7 @@ public class Prompt {
         String prompt = switch (stateManager.getCurrentState()) {
             case LOGGED_OUT -> "[LOGGED_OUT] >>> ";
             case LOGGED_IN -> "[LOGGED_IN] >>> ";
-            case IN_GAME -> "[IN_GAME] >>> ";
-            case OBSERVING -> "[OBSERVING] >>> ";
+            default -> "";
         };
 
         return SET_TEXT_COLOR_LIGHT_GREY + prompt + RESET_TEXT_COLOR;

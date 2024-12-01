@@ -39,17 +39,15 @@ public class ChessClient {
 
         stateManager = new StateManager(ClientState.LOGGED_OUT);
         menuUI = new MenuUI(stateManager);
+        boardUI = new ChessBoardUI();
         prompt = new Prompt(stateManager);
 
-        var notificationHandler = new NotificationHandler(stateManager);
+        var notificationHandler = new NotificationHandler(stateManager, boardUI);
         var webSocketFacade = new WebSocketFacade("ws://" + url, notificationHandler);
-
-        var initialBoardMatrix = new ChessGame().getBoard().getBoardMatrix();
-        boardUI = new ChessBoardUI(initialBoardMatrix, ChessGame.TeamColor.WHITE);
 
         loggedInProcessor = new LoggedInCommandProcessor(serverFacade, webSocketFacade, stateManager);
         loggedOutProcessor = new LoggedOutCommandProcessor(serverFacade, stateManager);
-        inGameCommandProcessor = new InGameCommandProcessor(webSocketFacade, stateManager);
+        inGameCommandProcessor = new InGameCommandProcessor(webSocketFacade, stateManager, boardUI);
     }
 
     void eval(String input) {

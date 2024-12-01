@@ -5,6 +5,7 @@ import client.InvalidParamsException;
 import client.ServerFacade;
 import client.StateManager;
 import client.WebSocketFacade;
+import ui.ChessBoardUI;
 import ui.MessagePresenter;
 import websocket.commands.UserGameCommand;
 
@@ -17,16 +18,19 @@ public class InGameCommandProcessor {
     private final WebSocketFacade webSocketFacade;
     private final StateManager stateManager;
     private final CoordinateParser coordinateParser = new CoordinateParser();
+    private final ChessBoardUI boardUI;
 
-    public InGameCommandProcessor(WebSocketFacade webSocketFacade, StateManager stateManager) {
+    public InGameCommandProcessor(WebSocketFacade webSocketFacade, StateManager stateManager, ChessBoardUI boardUI) {
         this.webSocketFacade = webSocketFacade;
         this.stateManager = stateManager;
+        this.boardUI = boardUI;
     }
 
     public void process(String cmd, String[] params) {
         try {
             switch (cmd) {
                 case "move" -> makeMove(params);
+                case "redraw" -> redraw();
             }
         } catch (InvalidParamsException | IOException e) {
             MessagePresenter.handleError(e.getMessage());
@@ -41,5 +45,9 @@ public class InGameCommandProcessor {
 
         ChessMove move = coordinateParser.parseMove(params);
         webSocketFacade.makeMove(stateManager.getAuthToken(), stateManager.getGameID(), move);
+    }
+
+    public void redraw() {
+        System.out.println(boardUI);
     }
 }

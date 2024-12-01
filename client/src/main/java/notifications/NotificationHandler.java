@@ -11,10 +11,11 @@ public class NotificationHandler {
 
     private final ObjectSerializer serializer = new ObjectSerializer();
     private final StateManager stateManager;
-    private final ChessBoardUI boardUI = new ChessBoardUI();
+    private final ChessBoardUI boardUI;
 
-    public NotificationHandler(StateManager stateManager) {
+    public NotificationHandler(StateManager stateManager, ChessBoardUI boardUI) {
         this.stateManager = stateManager;
+        this.boardUI = boardUI;
     }
 
     public void notify(String message) {
