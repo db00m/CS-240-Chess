@@ -1,10 +1,7 @@
 package commandprocessing;
 
 import chess.ChessMove;
-import client.InvalidParamsException;
-import client.ServerFacade;
-import client.StateManager;
-import client.WebSocketFacade;
+import client.*;
 import ui.ChessBoardUI;
 import ui.MessagePresenter;
 import websocket.commands.UserGameCommand;
@@ -32,7 +29,7 @@ public class InGameCommandProcessor {
                 case "move" -> makeMove(params);
                 case "redraw" -> redraw();
                 case "resign" -> resign();
-//                case "leave" -> ;
+                case "leave" -> leave();
             }
         } catch (InvalidParamsException | IOException e) {
             MessagePresenter.handleError(e.getMessage());
@@ -55,5 +52,10 @@ public class InGameCommandProcessor {
 
     public void resign() throws IOException {
         webSocketFacade.resign(stateManager.getAuthToken(), stateManager.getGameID());
+    }
+
+    public void leave() throws IOException {
+        webSocketFacade.leave(stateManager.getAuthToken(), stateManager.getGameID());
+        stateManager.setState(ClientState.LOGGED_IN);
     }
 }
