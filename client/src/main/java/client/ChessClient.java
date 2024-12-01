@@ -39,7 +39,7 @@ public class ChessClient {
 
         stateManager = new StateManager(ClientState.LOGGED_OUT);
         menuUI = new MenuUI(stateManager);
-        boardUI = new ChessBoardUI();
+        boardUI = new ChessBoardUI(stateManager);
         prompt = new Prompt(stateManager);
 
         var notificationHandler = new NotificationHandler(stateManager, boardUI);

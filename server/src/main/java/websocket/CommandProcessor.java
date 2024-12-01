@@ -91,8 +91,8 @@ public class CommandProcessor {
         gameService.updateGame(gameModel);
 
         Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
-        sender.sendGroupNotification(session, gameMembers, username + " left the game");
         gameMembers.remove(session);
+        sender.sendGroupNotification(null, gameMembers, username + " left the game");
     }
 
     private Set<Session> getConnectedSessions(int gameId, Session session) {

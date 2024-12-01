@@ -1,10 +1,12 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
+import chess.*;
+import client.StateManager;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static ui.EscapeSequences.*;
 
@@ -29,36 +31,21 @@ public class ChessBoardUI {
             ChessPiece.PieceType.KING, BLACK_KING,
             ChessPiece.PieceType.BISHOP, BLACK_BISHOP);
 
-    private ChessPiece[][] boardState;
-    private ChessGame.TeamColor playerTeam;
+    private final StateManager stateManager;
+
     private int iterationStart;
     private int iterationEnd;
     private int iterationDirection;
 
-    public static void main(String [] args) {
-        var board = new ChessBoard();
-        board.resetBoard();
-        var gui = new ChessBoardUI(board.getBoardMatrix(), ChessGame.TeamColor.WHITE);
-        System.out.println(gui);
-        gui.setPlayerTeam(ChessGame.TeamColor.BLACK);
-        System.out.println(gui);
+    private final Collection<ChessPosition> highlightedSpaces = new HashSet<>();
+    private ChessPosition focusPosition = null;
+
+    public ChessBoardUI(StateManager stateManager) {
+        this.stateManager = stateManager;
     }
 
-    public ChessBoardUI(ChessPiece[][] boardState, ChessGame.TeamColor playerTeam) {
-        this.boardState = boardState;
-        setPlayerTeam(playerTeam);
-    }
-
-    public ChessBoardUI() {
-    }
-
-    public void setBoardState(ChessPiece[][] newBoardState) {
-        boardState = newBoardState;
-    }
-
-    public void setPlayerTeam(ChessGame.TeamColor newPlayerTeam) {
-        this.playerTeam = newPlayerTeam;
-        if (playerTeam == ChessGame.TeamColor.BLACK) {
+    public void setIterationVars() {
+        if (stateManager.getTeamColor() == ChessGame.TeamColor.BLACK) {
             iterationStart = 7;
             iterationEnd = -1;
             iterationDirection = -1;
@@ -69,8 +56,22 @@ public class ChessBoardUI {
         }
     }
 
+    public String withHighlighting(ChessPosition piecePosition) {
+        focusPosition = piecePosition;
+        for (ChessMove move : stateManager.getGameState().validMoves(piecePosition)) {
+            highlightedSpaces.add(move.endPosition());
+        }
+
+        String boardString = toString();
+        highlightedSpaces.clear();
+        focusPosition = null;
+
+        return boardString;
+    }
+
     @Override
     public String toString() {
+        setIterationVars();
         return header() + gameBoard() + header();
     }
 
@@ -98,22 +99,28 @@ public class ChessBoardUI {
     }
 
     private String boardRow(int index) {
-        String color = getSquareColor(index, playerTeam);
+        String color = getSquareColor(index, stateManager.getTeamColor());
 
         StringBuilder rowString = new StringBuilder();
         rowString.append(square(SET_BG_COLOR_LIGHT_GREY, ROWS[index]));
 
         for (int i = iterationStart; i < iterationEnd || i > iterationEnd; i += iterationDirection) {
-//            color = highlight(color);
-            ChessPiece piece = boardState[7 - index][i];
+            var displayColor = color;
+            var position = new ChessPosition(8 - index, i + 1);
+            if (highlightedSpaces.contains(position)) {
+                displayColor = highlight(displayColor);
+            } else if (position.equals(focusPosition)) {
+                displayColor = SET_BG_COLOR_YELLOW;
+            }
+            ChessPiece piece = stateManager.getGameState().getBoard().getPiece(position);
             if (piece == null) {
-                rowString.append(square(color, EMPTY));
+                rowString.append(square(displayColor, EMPTY));
             } else {
                 var isWhite = piece.getTeamColor() == ChessGame.TeamColor.WHITE;
                 Map<ChessPiece.PieceType, String> pieceMapping = isWhite ? WHITE_PIECE_MAPPING : BLACK_PIECE_MAPPING;
                 String pieceColor = isWhite ? SET_TEXT_COLOR_BLUE : SET_TEXT_COLOR_RED;
 
-                rowString.append(square(color, occupantString(pieceColor, pieceMapping.get(piece.getPieceType()))));
+                rowString.append(square(displayColor, occupantString(pieceColor, pieceMapping.get(piece.getPieceType()))));
             }
 
             color = toggleColor(color);

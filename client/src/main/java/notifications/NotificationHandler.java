@@ -28,9 +28,6 @@ public class NotificationHandler {
     }
 
     public void loadGame(ChessGame game) {
-        boardUI.setBoardState(game.getBoard().getBoardMatrix());
-        boardUI.setPlayerTeam(stateManager.getTeamColor());
-
         stateManager.setGameState(game);
 
         System.out.println(boardUI);

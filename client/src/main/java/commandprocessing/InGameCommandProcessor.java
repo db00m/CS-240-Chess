@@ -1,6 +1,7 @@
 package commandprocessing;
 
 import chess.ChessMove;
+import chess.ChessPosition;
 import client.*;
 import ui.ChessBoardUI;
 import ui.MessagePresenter;
@@ -51,8 +52,14 @@ public class InGameCommandProcessor {
         System.out.println(boardUI);
     }
 
-    public void highlight(String[] params) {
+    public void highlight(String[] params) throws InvalidParamsException {
 
+        if (params.length < 1) {
+            throw new InvalidParamsException("Please include the position of the piece you want to highlight");
+        }
+
+        ChessPosition position = coordinateParser.parsePosition(params[0]);
+        System.out.println(boardUI.withHighlighting(position));
     }
 
     public void resign() throws IOException {
