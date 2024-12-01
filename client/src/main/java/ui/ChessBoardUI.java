@@ -49,6 +49,9 @@ public class ChessBoardUI {
         setPlayerTeam(playerTeam);
     }
 
+    public ChessBoardUI() {
+    }
+
     public void setBoardState(ChessPiece[][] newBoardState) {
         boardState = newBoardState;
     }
@@ -66,6 +69,7 @@ public class ChessBoardUI {
         }
     }
 
+    @Override
     public String toString() {
         return header() + gameBoard() + header();
     }

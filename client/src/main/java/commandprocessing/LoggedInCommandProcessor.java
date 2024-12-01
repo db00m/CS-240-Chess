@@ -92,15 +92,14 @@ public class LoggedInCommandProcessor {
             ChessGame.TeamColor color = params[1].equalsIgnoreCase("black") ?
                     ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
 
-            Integer gameID = gameMapping.get(Integer.parseInt(params[0]));
-
-            if(gameID == null) {
-                throw new InvalidParamsException("Game with an ID of: " + params[0] + " does not exist");
-            }
+            int gameID = getGameId(params[0]);
 
             serverFacade.joinGame(stateManager.getAuthToken(), color, gameID);
             webSocketFacade.connect(stateManager.getAuthToken(), gameID);
 
+            stateManager.setState(ClientState.IN_GAME);
+            stateManager.setTeamColor(color);
+            stateManager.setGameID(gameID);
         } catch (IOException | InvalidParamsException e) {
             MessagePresenter.handleError(e.getMessage());
         }
@@ -108,6 +107,29 @@ public class LoggedInCommandProcessor {
     }
 
     private void observeGame(String[] params) {
-        // TODO: connect to web socket
+        try {
+            if (params.length < 1) {
+                throw new InvalidParamsException("Game ID is required");
+            }
+
+            int gameID = getGameId(params[0]);
+
+            webSocketFacade.connect(stateManager.getAuthToken(), gameID);
+
+            stateManager.setState(ClientState.OBSERVING);
+            stateManager.setGameID(gameID);
+        } catch (InvalidParamsException | IOException e ) {
+            MessagePresenter.handleError(e.getMessage());
+        }
+    }
+
+    private Integer getGameId(String gameIdParam) throws InvalidParamsException {
+        Integer gameID = gameMapping.get(Integer.parseInt(gameIdParam));
+
+        if(gameID == null) {
+            throw new InvalidParamsException("Game with an ID of: " + gameIdParam + " does not exist");
+        }
+
+        return gameID;
     }
 }

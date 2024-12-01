@@ -12,18 +12,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class WebSocketConnectionManager extends Endpoint {
-    private URI uri;
+    private final URI uri;
     private final static String PATH = "/ws";
     private Session session = null;
-
-    public static void main(String [] args) throws IOException {
-        var con = new WebSocketConnectionManager("ws://localhost:8080");
-        con.openSocket(new NotificationHandler());
-        UserGameCommand command = new UserGameCommand(CommandType.CONNECT, "2fbf4eea-12e5-4bce-a5ef-076ecfebd213", 484);
-        con.sendMessage(new ObjectSerializer().toJson(command));
-        while (true) {}
-    }
-
 
     public WebSocketConnectionManager(String root) {
         try {

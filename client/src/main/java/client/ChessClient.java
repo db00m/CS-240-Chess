@@ -4,6 +4,7 @@ import chess.ChessGame;
 import commandprocessing.InGameCommandProcessor;
 import commandprocessing.LoggedInCommandProcessor;
 import commandprocessing.LoggedOutCommandProcessor;
+import notifications.NotificationHandler;
 import ui.ChessBoardUI;
 import ui.MenuUI;
 import ui.Prompt;
@@ -35,11 +36,13 @@ public class ChessClient {
 
     public ChessClient(String url) throws IOException {
         var serverFacade = new ServerFacade("http://" + url);
-        var webSocketFacade = new WebSocketFacade("ws://" + url);
 
         stateManager = new StateManager(ClientState.LOGGED_OUT);
         menuUI = new MenuUI(stateManager);
         prompt = new Prompt(stateManager);
+
+        var notificationHandler = new NotificationHandler(stateManager);
+        var webSocketFacade = new WebSocketFacade("ws://" + url, notificationHandler);
 
         var initialBoardMatrix = new ChessGame().getBoard().getBoardMatrix();
         boardUI = new ChessBoardUI(initialBoardMatrix, ChessGame.TeamColor.WHITE);

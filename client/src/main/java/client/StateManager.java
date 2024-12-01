@@ -1,11 +1,17 @@
 package client;
 
+import chess.ChessGame;
 import ui.MessagePresenter;
 
 public class StateManager {
+
     private ClientState currentState;
 
     private String authToken = null;
+
+    private ChessGame gameState = new ChessGame();
+    private Integer gameID;
+    private ChessGame.TeamColor teamColor = ChessGame.TeamColor.WHITE;
 
     StateManager(ClientState initialState) {
         currentState = initialState;
@@ -22,16 +28,33 @@ public class StateManager {
         this.currentState = state;
     }
 
-    void setCurrentState(ClientState newState) {
-        currentState = newState;
+    public void setGameState(ChessGame game) {
+        this.gameState = game;
+    }
+
+    public ChessGame getGameState() {
+        return gameState;
+    }
+
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
+    }
+
+    public int getGameID() {
+        return this.gameID;
+    }
+
+
+    public void setTeamColor(ChessGame.TeamColor teamColor) {
+        this.teamColor = teamColor;
+    }
+
+    public ChessGame.TeamColor getTeamColor() {
+        return teamColor;
     }
 
     public ClientState getCurrentState() {
         return currentState;
-    }
-
-    void setAuthToken(String authToken) {
-        this.authToken = authToken;
     }
 
     public String getAuthToken() {
