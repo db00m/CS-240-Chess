@@ -31,6 +31,8 @@ public class InGameCommandProcessor {
             switch (cmd) {
                 case "move" -> makeMove(params);
                 case "redraw" -> redraw();
+                case "resign" -> resign();
+//                case "leave" -> ;
             }
         } catch (InvalidParamsException | IOException e) {
             MessagePresenter.handleError(e.getMessage());
@@ -49,5 +51,9 @@ public class InGameCommandProcessor {
 
     public void redraw() {
         System.out.println(boardUI);
+    }
+
+    public void resign() throws IOException {
+        webSocketFacade.resign(stateManager.getAuthToken(), stateManager.getGameID());
     }
 }
