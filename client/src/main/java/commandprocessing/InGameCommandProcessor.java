@@ -28,6 +28,7 @@ public class InGameCommandProcessor {
             switch (cmd) {
                 case "move" -> makeMove(params);
                 case "redraw" -> redraw();
+                case "highlight" -> highlight(params);
                 case "resign" -> resign();
                 case "leave" -> leave();
             }
@@ -48,6 +49,10 @@ public class InGameCommandProcessor {
 
     public void redraw() {
         System.out.println(boardUI);
+    }
+
+    public void highlight(String[] params) {
+
     }
 
     public void resign() throws IOException {

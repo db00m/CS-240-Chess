@@ -98,17 +98,13 @@ public class ChessBoardUI {
     }
 
     private String boardRow(int index) {
-        String color;
-        if (playerTeam == ChessGame.TeamColor.WHITE) {
-            color = index % 2 == 1 ? SET_BG_COLOR_BLACK : SET_BG_COLOR_WHITE;
-        } else {
-            color = index % 2 == 0 ? SET_BG_COLOR_BLACK : SET_BG_COLOR_WHITE;
-        }
+        String color = getSquareColor(index, playerTeam);
 
         StringBuilder rowString = new StringBuilder();
         rowString.append(square(SET_BG_COLOR_LIGHT_GREY, ROWS[index]));
 
         for (int i = iterationStart; i < iterationEnd || i > iterationEnd; i += iterationDirection) {
+//            color = highlight(color);
             ChessPiece piece = boardState[7 - index][i];
             if (piece == null) {
                 rowString.append(square(color, EMPTY));
@@ -120,7 +116,7 @@ public class ChessBoardUI {
                 rowString.append(square(color, occupantString(pieceColor, pieceMapping.get(piece.getPieceType()))));
             }
 
-            color = color.equals(SET_BG_COLOR_BLACK) ? SET_BG_COLOR_WHITE : SET_BG_COLOR_BLACK;
+            color = toggleColor(color);
 
         }
         rowString.append(SET_TEXT_COLOR_BLACK);
@@ -137,5 +133,33 @@ public class ChessBoardUI {
 
     private String occupantString(String foregroundColor, String occupantChar) {
         return foregroundColor + occupantChar;
+    }
+
+    private String getSquareColor(int index, ChessGame.TeamColor playerTeam) {
+
+        String whiteColor = SET_BG_COLOR_WHITE;
+        String blackColor = SET_BG_COLOR_BLACK;
+
+        if (playerTeam == ChessGame.TeamColor.WHITE) {
+            return index % 2 == 1 ? blackColor : whiteColor;
+        } else {
+            return index % 2 == 0 ? blackColor : whiteColor;
+        }
+    }
+
+    private String highlight(String color) {
+        return switch (color) {
+            case SET_BG_COLOR_WHITE -> SET_BG_COLOR_GREEN;
+            case SET_BG_COLOR_BLACK -> SET_BG_COLOR_DARK_GREEN;
+            default -> color;
+        };
+    }
+
+    private String toggleColor(String color) {
+        return switch (color) {
+            case SET_BG_COLOR_GREEN, SET_BG_COLOR_WHITE -> SET_BG_COLOR_BLACK;
+            case SET_BG_COLOR_DARK_GREEN, SET_BG_COLOR_BLACK -> SET_BG_COLOR_WHITE;
+            default -> color;
+        };
     }
 }
