@@ -80,11 +80,11 @@ public class CommandProcessor {
     private void leave(UserGameCommand command, String username, Session session) throws DataAccessException, IOException {
         ChessGameModel gameModel = getGameModel(command.getGameID());
 
-//        String userRoll = gameModel.getUserRoll(username);
+        String userRoll = gameModel.getUserRoll(username);
 
-        if ("White".equals(gameModel.getUserRoll(username))) {
+        if ("White".equals(userRoll)) {
             gameModel.setWhiteUsername(null);
-        } else if ("Black".equals(gameModel.getUserRoll(username))) {
+        } else if ("Black".equals(userRoll)) {
             gameModel.setBlackUsername(null);
         }
 
