@@ -54,9 +54,21 @@ public class CommandProcessor {
         game.makeMove(command.getMove());
         gameService.updateGame(gameModel);
 
+        StringBuilder messageBuilder = new StringBuilder(username + " moved.");
+
+        if (game.isInCheck(ChessGame.TeamColor.BLACK)) {
+            messageBuilder.append(" Black is in Check!");
+        } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
+            messageBuilder.append(" White is in Check!");
+        } else if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            messageBuilder.append(" Black is in Checkmate, Game Over!");
+        } else if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            messageBuilder.append(" White is in Checkmate, Game Over!");
+        }
+
         Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
         sender.loadGameForAll(gameMembers, game);
-        sender.sendGroupNotification(session, gameMembers, username + " moved.");
+        sender.sendGroupNotification(session, gameMembers, messageBuilder.toString());
     }
 
     private void resign(UserGameCommand command, String username, Session session) throws DataAccessException, IOException, InvalidMoveException {

@@ -10,6 +10,7 @@ import websocket.messages.ServerMessage;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_YELLOW;
 import static ui.MessagePresenter.handleError;
+import static ui.MessagePresenter.printColoredMessage;
 
 public class NotificationHandler {
 
