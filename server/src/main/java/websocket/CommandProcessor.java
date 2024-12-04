@@ -46,6 +46,7 @@ public class CommandProcessor {
         ChessGame game = gameModel.getGame();
 
         checkPlayerPresence(gameModel);
+        checkGameOver(game);
 
         if (game.getTeamTurn() != gameModel.getUserTeam(username)) {
             throw new InvalidMoveException("It is not your turn.");
@@ -61,8 +62,10 @@ public class CommandProcessor {
         } else if (game.isInCheck(ChessGame.TeamColor.WHITE)) {
             messageBuilder.append(" White is in Check!");
         } else if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            game.setGameOver();
             messageBuilder.append(" Black is in Checkmate, Game Over!");
         } else if (game.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+            game.setGameOver();
             messageBuilder.append(" White is in Checkmate, Game Over!");
         }
 
@@ -75,18 +78,17 @@ public class CommandProcessor {
         ChessGameModel gameModel = getGameModel(command.getGameID());
 
         checkPlayerPresence(gameModel);
+        checkGameOver(gameModel.getGame());
 
-        switch (gameModel.getUserRoll(username)) {
-            case "White" -> gameModel.setWhiteUsername(null);
-            case "Black" -> gameModel.setBlackUsername(null);
-            default -> throw new InvalidMoveException("Not a player");
+        if (gameModel.getUserRoll(username).equals("Observer")) {
+            throw new InvalidMoveException("Only players can resign");
         }
 
+        gameModel.getGame().setGameOver();
         gameService.updateGame(gameModel);
 
         Set<Session> gameMembers = getConnectedSessions(command.getGameID(), session);
         sender.sendGroupNotification(null, gameMembers, username + " resigned from the game");
-        gameMembers.remove(session);
     }
 
     private void leave(UserGameCommand command, String username, Session session) throws DataAccessException, IOException {
@@ -118,6 +120,12 @@ public class CommandProcessor {
     private void checkPlayerPresence(ChessGameModel gameModel) throws InvalidMoveException {
         if (gameModel.getWhiteUsername() == null || gameModel.getBlackUsername() == null) {
             throw new InvalidMoveException("Both player need to be present");
+        }
+    }
+
+    private void checkGameOver(ChessGame game) throws InvalidMoveException {
+        if (game.isOver()) {
+            throw new InvalidMoveException("Game has ended, no more moves can be made");
         }
     }
 

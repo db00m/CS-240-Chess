@@ -8,8 +8,7 @@ import ui.ChessBoardUI;
 import ui.MessagePresenter;
 import websocket.messages.ServerMessage;
 
-import static ui.EscapeSequences.SET_TEXT_COLOR_YELLOW;
-import static ui.MessagePresenter.handleError;
+import static ui.EscapeSequences.*;
 import static ui.MessagePresenter.printColoredMessage;
 
 public class NotificationHandler {
@@ -41,5 +40,9 @@ public class NotificationHandler {
 
     public void handleNotification(String message) {
         MessagePresenter.printColoredMessage(message, SET_TEXT_COLOR_YELLOW);
+    }
+
+    public void handleError(String errorMessage) {
+        MessagePresenter.printColoredMessage(errorMessage, SET_TEXT_COLOR_RED);
     }
 }

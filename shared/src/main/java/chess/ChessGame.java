@@ -16,6 +16,7 @@ public class ChessGame {
     private ChessBoard board;
     private TeamColor teamTurn;
     private ChessMove lastMoveMade = null;
+    private boolean gameIsOver = false;
 
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
@@ -45,6 +46,14 @@ public class ChessGame {
     public enum TeamColor {
         WHITE,
         BLACK
+    }
+
+    public void setGameOver() {
+        gameIsOver = true;
+    }
+
+    public boolean isOver() {
+        return gameIsOver;
     }
 
     /**

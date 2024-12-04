@@ -1,6 +1,7 @@
 package commandprocessing;
 
 import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import chess.InvalidMoveException;
 import client.InvalidParamsException;
@@ -26,6 +27,14 @@ public class CoordinateParser {
 
         for (int i = 0; i < 2; i++) {
             positions[i] = parsePosition(coords[i]);
+        }
+
+        try {
+            if (coords.length > 2) {
+                return new ChessMove(positions[0], positions[1], ChessPiece.PieceType.valueOf(coords[2].toUpperCase()));
+            }
+        } catch (IllegalArgumentException e) {
+            throw new InvalidParamsException("Provided promotion piece is not a valid piece");
         }
 
         return new ChessMove(positions[0], positions[1]);
